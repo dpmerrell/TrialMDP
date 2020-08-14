@@ -57,18 +57,31 @@ int main(int argc, char* argv[]){
 	my_table.pretty_print();
 
 
-	//int* my_arr = new int[4];
-
-        ContingencyIterator it = ContingencyIterator(2);
-        it.pretty_print();
+        //ContingencyIterator it = ContingencyIterator(2);
+	//it.value().pretty_print();
+        ////it.pretty_print();
         //it.advance();
 	//it.value().pretty_print();
-	//for(ContingencyIterator it = ContingencyIterator(1); 
-	//    it.not_finished(); 
-	//    it.advance())
-	//{
-        //    it.value().pretty_print();
-	//}
+        //it.advance();
+	//it.value().pretty_print();
+        //it.advance();
+	//it.value().pretty_print();
+	ContingencyIterator it = ContingencyIterator(500);
+	int k = 0;
+	while(true){
+
+	    //it.value().pretty_print();
+	    k++; 
+
+            if(it.not_finished()){
+		//std::cout << "\n";
+	        it.advance();
+	    }else{
+		break;
+	    }	   
+
+	}
+	std::cout << k << " TABLES" << std::endl;
 }
 
 

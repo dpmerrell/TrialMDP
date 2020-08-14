@@ -19,3 +19,7 @@ $(BUILD_DIR)/main.o: $(SRC_DIR)/main.cpp $(INCLUDE_DIR)/contingency_table.h $(IN
 
 $(BUILD_DIR)/contingency_iterator.o: $(SRC_DIR)/contingency_iterator.cpp $(INCLUDE_DIR)/contingency_iterator.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_DIR)/contingency_iterator.cpp -o $@
+
+clean:
+	rm -f $(BUILD_DIR)/*.o
+	rm -f $(BIN_DIR)/*

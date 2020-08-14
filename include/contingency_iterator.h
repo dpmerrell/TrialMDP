@@ -9,6 +9,7 @@
 #define _CONT_ITER_H
 
 #include "contingency_table.h"
+#include <vector>
 
 class SimplexIterator {
 
@@ -16,32 +17,28 @@ class SimplexIterator {
 	// private data
 	int dim;
 	int total;
-	SimplexIterator* state;
+	SimplexIterator* sub_state;
 
 	// private methods
-	void increment_total(){ total++; }
-	void restart();	
+	void increment_total(){ total++; cur_value[0]++; }
+	void restart();
+        void reset_totals();	
 
     public:
 	// public data member
 	int* cur_value;
 
         // constructors
-	SimplexIterator(){
-            dim = 0;
-	    total = 0;
-	    cur_value = NULL;
-	    state = NULL;
-	}
+	SimplexIterator();
+	SimplexIterator(int, int, int*);
 
-	SimplexIterator(int dim, int total, int* memloc){
-            dim = dim;
-            total = total;
-            cur_value = memloc;
-            state = NULL;
-        }
+	// copy constructor
+        SimplexIterator(const SimplexIterator& it);
 
-	// public methods
+	// Assignment operator
+	SimplexIterator& operator=(SimplexIterator);
+
+	// other public methods
 	void set_sub(SimplexIterator* sub_iter);
 	bool not_finished();
 	void advance();
@@ -50,13 +47,11 @@ class SimplexIterator {
 };
 
 
-
-
 class ContingencyIterator {
 
 	private:
-            SimplexIterator* state;
-	    SimplexIterator* simplex_iter_factory(int dim, int total, int* memloc);
+	    std::vector<SimplexIterator*> state;
+	    std::vector<SimplexIterator*> simplex_iter_factory(int dim, int total, int* memloc);
 
 	public:
 	    ContingencyIterator(int size){
@@ -65,21 +60,23 @@ class ContingencyIterator {
 	        state = this->simplex_iter_factory(4, size, cur_value); 
 	    }
 
-	    bool not_finished(){ return state->not_finished(); }
+	    bool not_finished(){ return state[0]->not_finished(); }
 	    
 	    ContingencyTable value(){ 
 		    ContingencyTable result;
-		    result.a0 = state->cur_value[0];  
-		    result.a1 = state->cur_value[1];  
-		    result.b0 = state->cur_value[2];  
-		    result.b1 = state->cur_value[3];  
+		    result.a0 = state[0]->cur_value[0];  
+		    result.a1 = state[0]->cur_value[1];  
+		    result.b0 = state[0]->cur_value[2];  
+		    result.b1 = state[0]->cur_value[3];  
 		    return result;
 	    }
-	    void advance(){ state->advance(); }
+	    void advance(){ state[0]->advance(); }
 
 	    ~ContingencyIterator(){
-                delete state->cur_value;
-		delete state;
+                delete state[0]->cur_value;
+		for(unsigned int i=0; i<state.size(); i++){
+                    delete state[i];
+		}
 	    }
 
 	    void pretty_print();
