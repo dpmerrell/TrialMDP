@@ -3,6 +3,10 @@
 //
 // A simple struct definition for 2x2 contingency tables.
 
+#ifndef _CONT_TABLE_H
+#define _CONT_TABLE_H
+
+#include <iostream>
 #include <string>
 
 struct ContingencyTable {
@@ -19,7 +23,17 @@ struct ContingencyTable {
     bool operator==(const ContingencyTable& other) const {
 	return (a0 == other.a0) && (a1 == other.a1) && (b0 == other.b0) && (b1 == other.b1);
     }
+
+    ContingencyTable& operator+=(const ContingencyTable& other){
+        a0 += other.a0;
+	a1 += other.a1;
+	b0 += other.b0;
+	b1 += other.b1;
+	return *this;
+    }
+
 };
+
 
 
 struct CTHash {
@@ -31,4 +45,6 @@ struct CTHash {
 			              + std::to_string(t.b1));
     }
 };
+
+#endif
 

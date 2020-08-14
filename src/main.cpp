@@ -6,11 +6,12 @@
 //
 
 #include <iostream>
-#include "contingency_table.h"
+//#include "contingency_table.h"
 #include <unordered_map>
 #include <vector>
 #include <string>
 #include <iterator>
+#include "contingency_iterator.h"
 
 std::string v_to_str(std::vector<float>& v){
     std::string result = "[";
@@ -50,6 +51,24 @@ int main(int argc, char* argv[]){
 	std::cout << "SHOULD BE A DIFFERENT VECTOR:\t" << v_to_str(my_map[different_table]) << std::endl;
 
         // std::cout << "SHOULD BE AN UNORDERED_MAP:\t" << my_map << std::endl;
+	//
+	my_table += other_table;
+
+	my_table.pretty_print();
+
+
+	//int* my_arr = new int[4];
+
+        ContingencyIterator it = ContingencyIterator(2);
+        it.pretty_print();
+        //it.advance();
+	//it.value().pretty_print();
+	//for(ContingencyIterator it = ContingencyIterator(1); 
+	//    it.not_finished(); 
+	//    it.advance())
+	//{
+        //    it.value().pretty_print();
+	//}
 }
 
 
