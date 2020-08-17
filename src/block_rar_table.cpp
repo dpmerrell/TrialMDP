@@ -7,10 +7,8 @@
 std::vector<int> build_n_vec(unsigned int n_max, unsigned int n_incr){
     unsigned int len = 1 + (n_max / n_incr);
     std::vector<int> result (len);
-    std::cout << "LEN: " << len << std::endl;
     int k = 0;
     for(unsigned int i = 0; i <= n_max; i += n_incr){
-        std::cout << "IDX: " << k <<  "\tVALUE: " << i << std::endl;
         result[k] = i;
 	k++;
     }
@@ -34,7 +32,6 @@ BlockRARTable::BlockRARTable(int n_max, int n_incr){
     for(unsigned int i = 0; i < results.size(); i++){
         int n_buckets = size_fn(n_vec[i]) / 5;
         results[i] = new std::unordered_map<ContingencyTable, StateResult, CTHash>(n_buckets);
-	std::cout << "\t" << size_fn(n_vec[i]) << std::endl;
     }
 
 }

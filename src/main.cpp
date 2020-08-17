@@ -30,13 +30,27 @@ std::string v_to_str(std::vector<int>& v){
     return result;
 }	
 
+std::vector<int> parse_args(int argc, char* argv[]){
+
+    std::vector<int> result;
+    for(int i=1; i < argc; i++){
+        result.push_back(std::stoi(argv[i]));
+    }
+    return result;
+}
+
 
 int main(int argc, char* argv[]){
 
-	// 500 patients; each block is a multiple of 25 patients in size.
-	// Note: under these settings, the table takes up ~9GB of RAM.
-	// That gives a sense of the memory cost of the algorithm.
-	BlockRARTable result_table = BlockRARTable(500,25);
+
+	// Reference case:
+	// For arguments (patients=500, increment=25) 
+	// the results table takes up ~9GB of RAM.
+	// That gives a sense of the algorithm's memory cost.
+	
+	std::vector<int> arg_vec = parse_args(argc, argv);
+
+	BlockRARTable result_table = BlockRARTable(arg_vec[0], arg_vec[1]);
 	std::cout << "Initialized table" << std::endl;
 
         std::vector<int> n_vals = result_table.get_n_vec();
