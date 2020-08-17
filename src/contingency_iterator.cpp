@@ -98,8 +98,6 @@ void ContingencyIterator::pretty_print(){
 std::vector<SimplexIterator*> ContingencyIterator::simplex_iter_factory(int dim, int total, int* memloc){
     std::vector<SimplexIterator*> it_stack;
     it_stack.push_back( new SimplexIterator(dim, total, memloc));
-    std::cout << "OUTERMOST:\n\t";
-    it_stack[0]->pretty_print();
     it_stack[0]->cur_value[0] = total;
 
     for(int i = 1; i < dim; i++){
