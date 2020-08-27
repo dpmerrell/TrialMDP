@@ -24,7 +24,7 @@ void SimplexIterator::set_sub(SimplexIterator* sub_iter){
 }
 
 bool SimplexIterator::not_finished(){
-    return (cur_value[dim-1] != total);
+    return (cur_value[dim-1] < total);
 }
 
 void SimplexIterator::reset_totals(){

@@ -14,7 +14,7 @@
 #include "state_result.h"
 #include "contingency_iterator.h"
 #include "contingency_table.h"
-
+#include "state_iterator.h"
 
 std::string v_to_str(std::vector<int>& v){
     std::string result = "[";
@@ -43,39 +43,44 @@ std::vector<int> parse_args(int argc, char* argv[]){
 int main(int argc, char* argv[]){
 
 
-	// Reference case:
+	// Reference cases:
 	// For arguments (patients=500, increment=25) 
 	// the results table takes up ~9GB of RAM.
 	// That gives a sense of the algorithm's memory cost.
-	
+	// Similarly: (200, 1) -> 5GB of RAM.
+	// A reasonably good workstation can handle these loads.
+	//
+	// The time cost of the algorithm is a whole other question.
+	// It will depend on whether we figure out any clever tricks:
+	// pruning, etc. Parallelism will help.
 	std::vector<int> arg_vec = parse_args(argc, argv);
 
+	//std::cout << "about to initialize table" << std::endl;
 	BlockRARTable result_table = BlockRARTable(arg_vec[0], arg_vec[1]);
 	std::cout << "Initialized table" << std::endl;
 
-        std::vector<int> n_vals = result_table.get_n_vec();
+	StateIterator s_it = StateIterator(result_table);
+	std::cout << "Initialized state iterator" << std::endl;
 
-	for (unsigned int j = 0; j < n_vals.size(); j++){
-            std::cout << n_vals[j] << " PATIENTS:" << std::endl;
+	std::cout << v_to_str(result_table.get_n_vec()) << std::endl;
 
-	    ContingencyIterator it = ContingencyIterator(n_vals[j]);
+	int iter = 0;
+	while(s_it.not_finished()){
+	    std::cout << iter << std::endl;
+	    int cur_idx = s_it.get_cur_idx();
+	    std::cout << "SUCCESSFULLY GOT IDX: " << cur_idx << std::endl;
 
-	    int k = 0;
-	    while(true){
-
-		result_table(j, it.value()) = StateResult {0, 0.0, 0.0, 0.0, 0.0, 0.0};
-	        k++; 
-
-                if(it.not_finished()){
-	            it.advance();
-	        }else{
-	    	    break;
-	        }	   
-
-	    }
-	    std::cout << "\t" << k << " TABLES" << std::endl;
-
+	    ContingencyTable ctab = s_it.value();
+	    ctab.pretty_print();
+            result_table(cur_idx, ctab) = StateResult {0, 0.0, 0.0, 0.0, 0.0, 0.0};
+	    std::cout << "SUCCESSFULLY ADDED STATE TO TABLE" << std::endl;
+            s_it.advance();
+	    iter++;
+	    bool is_fin = !s_it.not_finished();
+	    std::cout << "SUCCESSFULLY TESTED NOT_FINISHED: " << !is_fin << std::endl;
 	}
+	std::cout << "SUCCESSFULLY BROKE LOOP" << std::endl;
+	return 0;
 }
 
 

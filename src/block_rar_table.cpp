@@ -27,18 +27,13 @@ int size_fn(int n){
 
 BlockRARTable::BlockRARTable(int n_max, int n_incr){
     n_vec = build_n_vec(n_max, n_incr);
-    results = std::vector< std::unordered_map<ContingencyTable, StateResult, CTHash>* >(n_vec.size());
+    results = std::vector< std::unordered_map<ContingencyTable, StateResult, CTHash>* >();
     
-    for(unsigned int i = 0; i < results.size(); i++){
-        int n_buckets = size_fn(n_vec[i]) / 5;
-        results[i] = new std::unordered_map<ContingencyTable, StateResult, CTHash>(n_buckets);
+    for(unsigned int i = 0; i < n_vec.size(); i++){
+        //int n_buckets = size_fn(n_vec[i]) / 5;
+        results.push_back( new std::unordered_map<ContingencyTable, StateResult, CTHash> );//(n_buckets) ); 
     }
 
 }
 
 
-BlockRARTable::~BlockRARTable(){
-    for(unsigned int i = 0; i < results.size(); i++){
-        delete results[i];
-    }
-}

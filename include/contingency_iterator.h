@@ -54,11 +54,15 @@ class ContingencyIterator {
 	    std::vector<SimplexIterator*> simplex_iter_factory(int dim, int total, int* memloc);
 
 	public:
+
 	    ContingencyIterator(int size){
-		int* cur_value;
-	        cur_value = new int [4];
+		int* cur_value = new int [4];
 	        state = this->simplex_iter_factory(4, size, cur_value); 
 	    }
+	    
+	    //ContingencyIterator(){
+	    //    ContingencyIterator(0);
+	    //}
 
 	    bool not_finished(){ return state[0]->not_finished(); }
 	    
@@ -74,9 +78,9 @@ class ContingencyIterator {
 
 	    ~ContingencyIterator(){
                 delete state[0]->cur_value;
-		for(unsigned int i=0; i<state.size(); i++){
+	        for(unsigned int i=0; i<state.size(); i++){
                     delete state[i];
-		}
+	        }
 	    }
 
 	    void pretty_print();

@@ -16,6 +16,7 @@
 #include <vector>
 #include "contingency_table.h"
 #include "state_result.h"
+#include <iostream>
 
 class BlockRARTable{
 
@@ -27,13 +28,13 @@ class BlockRARTable{
         BlockRARTable(int n_max, int n_incr);
 
 	std::vector<int> & get_n_vec(){ return n_vec; }
-        // Get one of the hash maps
-	StateResult operator ()(int idx, ContingencyTable ct) const {return (*results[idx])[ct]; }
+        
 	// Set one of the hash maps
-	StateResult& operator ()(int idx, ContingencyTable ct) {return (*results[idx])[ct]; }
+	StateResult& operator ()(int idx, ContingencyTable ct) {return (*(results[idx]))[ct]; }
+	
+	// Get one of the hash maps
+	StateResult& operator ()(int idx, ContingencyTable ct) const { return (*(results[idx]))[ct];}
 
-        // Destructor
-	~BlockRARTable();
 };
 
 #endif
