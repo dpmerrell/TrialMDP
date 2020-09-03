@@ -10,7 +10,7 @@
 #include "contingency_table.h"
 #include "state_result.h"
 #include "block_rar_table.h"
-#include "block_rar_iterator.h"
+#include "state_iterator.h"
 #include <string>
 
 class BlockRAROpt{
@@ -19,17 +19,19 @@ class BlockRAROpt{
 	// Data
         int n_patients;
         int block_incr;
+	float error_cost;
+	float block_cost;
         BlockRARTable results_table;
-        BlockRARIterator state_iterator;
+        StateIterator state_iterator;
 	
 	// Methods
-	void initialize();
+	StateResult reward(ContingencyTable ct);
 	StateResult max_expected_reward(ContingencyTable ct);
 
     public:
 
         // Constructor
-	BlockRAROpt(int n_patients, int block_incr);
+	BlockRAROpt(int n_patients, int block_incr, float error_cost, float block_cost);
 
 	void solve();
 

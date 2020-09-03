@@ -66,18 +66,18 @@ int main(int argc, char* argv[]){
 
 	int iter = 0;
 	while(s_it.not_finished()){
-	    std::cout << iter << std::endl;
+	    //std::cout << iter << std::endl;
 	    int cur_idx = s_it.get_cur_idx();
-	    std::cout << "SUCCESSFULLY GOT IDX: " << cur_idx << std::endl;
+	    //std::cout << "SUCCESSFULLY GOT IDX: " << cur_idx << std::endl;
 
 	    ContingencyTable ctab = s_it.value();
-	    ctab.pretty_print();
+	    //ctab.pretty_print();
             result_table(cur_idx, ctab) = StateResult {0, 0.0, 0.0, 0.0, 0.0, 0.0};
-	    std::cout << "SUCCESSFULLY ADDED STATE TO TABLE" << std::endl;
+	    //std::cout << "SUCCESSFULLY ADDED STATE TO TABLE" << std::endl;
             s_it.advance();
 	    iter++;
 	    bool is_fin = !s_it.not_finished();
-	    std::cout << "SUCCESSFULLY TESTED NOT_FINISHED: " << !is_fin << std::endl;
+	    //std::cout << "SUCCESSFULLY TESTED NOT_FINISHED: " << !is_fin << std::endl;
 	}
 	std::cout << "SUCCESSFULLY BROKE LOOP" << std::endl;
 	return 0;
