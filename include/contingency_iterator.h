@@ -60,10 +60,6 @@ class ContingencyIterator {
 	        state = this->simplex_iter_factory(4, size, cur_value); 
 	    }
 	    
-	    //ContingencyIterator(){
-	    //    ContingencyIterator(0);
-	    //}
-
 	    bool not_finished(){ return state[0]->not_finished(); }
 	    
 	    ContingencyTable value(){ 

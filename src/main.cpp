@@ -15,6 +15,7 @@
 #include "contingency_iterator.h"
 #include "contingency_table.h"
 #include "state_iterator.h"
+#include "transition_iterator.h"
 
 std::string v_to_str(std::vector<int>& v){
     std::string result = "[";
@@ -80,6 +81,21 @@ int main(int argc, char* argv[]){
 	    //std::cout << "SUCCESSFULLY TESTED NOT_FINISHED: " << !is_fin << std::endl;
 	}
 	std::cout << "SUCCESSFULLY BROKE LOOP" << std::endl;
+
+	ContingencyTable cur_table = ContingencyTable {1,2,3,4};
+        TransitionIterator tr_it = TransitionIterator(cur_table, 100, 100);
+
+	float total_prob = 0.0;
+        while(tr_it.not_finished()){
+            std::cout << "prob: " << tr_it.prob() << std::endl;
+	    tr_it.value().pretty_print();
+
+	    tr_it.advance(); 
+
+	    total_prob += tr_it.prob();
+	}
+        std::cout << "TOTAL PROB: " << total_prob << std::endl;	
+
 	return 0;
 }
 

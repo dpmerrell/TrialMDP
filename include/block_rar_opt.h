@@ -21,11 +21,13 @@ class BlockRAROpt{
         int block_incr;
 	float error_cost;
 	float block_cost;
+	
         BlockRARTable results_table;
         StateIterator state_iterator;
-	
+	ActionIterator action_iterator;
+
 	// Methods
-	StateResult reward(ContingencyTable ct);
+	StateResult terminal_reward(ContingencyTable ct);
 	StateResult max_expected_reward(ContingencyTable ct);
 
     public:
