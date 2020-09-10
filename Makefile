@@ -19,7 +19,7 @@ debug: $(BIN_DIR)/main
 
 ###################################
 # MAIN BINARY
-$(BIN_DIR)/main: $(BUILD_DIR)/main.o $(BUILD_DIR)/action_iterator.o $(BUILD_DIR)/transition_iterator.o $(BUILD_DIR)/state_iterator.o $(BUILD_DIR)/contingency_iterator.o $(BUILD_DIR)/block_rar_table.o
+$(BIN_DIR)/main: $(BUILD_DIR)/main.o $(BUILD_DIR)/block_rar_opt.o $(BUILD_DIR)/action_iterator.o $(BUILD_DIR)/transition_iterator.o $(BUILD_DIR)/state_iterator.o $(BUILD_DIR)/contingency_iterator.o $(BUILD_DIR)/block_rar_table.o
 	mkdir -p $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) -o $@ $?
 
@@ -29,6 +29,10 @@ $(BIN_DIR)/main: $(BUILD_DIR)/main.o $(BUILD_DIR)/action_iterator.o $(BUILD_DIR)
 $(BUILD_DIR)/main.o: $(SRC_DIR)/main.cpp $(INCLUDE_DIR)/contingency_table.h $(INCLUDE_DIR)/contingency_iterator.h $(INCLUDE_DIR)/state_result.h $(INCLUDE_DIR)/block_rar_table.h 
 	mkdir -p $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) -c $(SRC_DIR)/main.cpp -o $@
+
+
+$(BUILD_DIR)/block_rar_opt.o: $(SRC_DIR)/block_rar_opt.cpp $(INCLUDE_DIR)/block_rar_table.h $(INCLUDE_DIR)/contingency_table.h $(INCLUDE_DIR)/state_result.h $(INCLUDE_DIR)/transition_iterator.h $(INCLUDE_DIR)/state_iterator.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_DIR)/block_rar_opt.cpp -o $@ 
 
 
 $(BUILD_DIR)/action_iterator.o: $(SRC_DIR)/action_iterator.cpp $(INCLUDE_DIR)/action_iterator.h $(INCLUDE_DIR)/contingency_iterator.h $(INCLUDE_DIR)/contingency_table.h 

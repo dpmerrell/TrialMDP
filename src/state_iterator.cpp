@@ -18,6 +18,12 @@ StateIterator::StateIterator(BlockRARTable tab){
     cur_count = 1;
 }
 
+StateIterator::StateIterator(){
+    n_vec = std::vector<int>();
+    cur_idx = 0;
+    cur_iter = NULL;
+    cur_count = 0;
+}
 
 ContingencyTable StateIterator::value(){
     return cur_iter->value();

@@ -5,7 +5,7 @@
 struct StateResult{
     // Optimal action
     int next_block_size;
-    float next_allocation_ratio;
+    int next_a_allocation;
 
     // terms of the reward function
     float statistical_power;

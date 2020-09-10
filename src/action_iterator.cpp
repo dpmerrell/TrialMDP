@@ -4,6 +4,25 @@
 #include "action_iterator.h"
 
 
+std::vector<int> build_alloc_vec(std::vector<float> ratio_vec, int block_size){
+
+    std::vector<int> result;
+    result.push_back(int(round(ratio_vec[0]*block_size)));
+    std::cout << "SUCCESSFULLY INITIALIZED ALLOC VEC" << std::endl; 
+
+    for(unsigned int r_idx = 1; r_idx < ratio_vec.size(); r_idx++){
+        int cv = int(round(ratio_vec[r_idx]*block_size));
+	if (cv != result[result.size()-1]){
+            result.push_back(cv);
+	}
+    }
+    
+    std::cout << "SUCCESSFULLY BUILT ALLOC VEC" << std::endl; 
+
+    return result;
+}
+
+
 ActionIterator::ActionIterator(float min_ratio, float max_ratio, int n_ratios,
                                std::vector<int> n_vec,
 	                       int n_idx){
@@ -11,56 +30,64 @@ ActionIterator::ActionIterator(float min_ratio, float max_ratio, int n_ratios,
     // Populate the vector of allocation ratios
     ratio_vec = std::vector<float>(n_ratios, 0.0);
     float ratio_incr = (max_ratio - min_ratio)/(n_ratios - 1.0);
-    for(unsigned int i=0; i < n_ratios; i++){
+    for(int i=0; i < n_ratios; i++){
         ratio_vec[i] = min_ratio + (i*ratio_incr);
+        std::cout << "\tratio:" << ratio_vec[i] << std::endl; 
+	 
     }
+    std::cout << "SUCCESSFULLY BUILT RATIO VEC" << std::endl; 
 
-    // Initiate index for allocation ratios
-    ratio_idx = 0;
-    
-    // Initiate index for block sizes
+    // Initiate block sizes
     size_vec = n_vec;
-    cur_n_idx = n_idx;
-    act_n_idx = cur_n_idx + 1;
-    act_n = size_vec[act_n_idx] - size_vec[cur_n_idx];
-    act_a = int(round(min_ratio*act_n));
-    act_b = act_n - act_a; 
+    cur_size_idx = n_idx;
+    size_idx = cur_size_idx + 1;
+    block_size = size_vec[size_idx] - size_vec[cur_size_idx];
+    
+    // Initiate allocations
+    alloc_vec = build_alloc_vec(ratio_vec, block_size); 
+    alloc_idx = 0;
+   
+    act_a = alloc_vec[0];
+    act_b = block_size - act_a; 
+    
+    std::cout << "SUCCESSFULLY CONSTRUCTED ACTION ITERATOR" << std::endl; 
 }
 
 
 void ActionIterator::reset(int n_idx){
 
-    ratio_idx = 0;
-    cur_n_idx = n_idx;
-    act_n_idx = n_idx + 1;
-    act_n = size_vec[act_n_idx] - size_vec[cur_n_idx];
-    act_a = int(round(ratio_vec[0]*act_n));
-    act_b = act_n - act_a;
+    alloc_idx = 0;
+    cur_size_idx = n_idx;
+    size_idx = n_idx + 1;
+    block_size = size_vec[size_idx] - size_vec[cur_size_idx];
+    act_a = alloc_vec[alloc_idx];
+    act_b = block_size - act_a;
 }
 
 
 bool ActionIterator::not_finished(){
-    return ((ratio_idx < ratio_vec.size() - 1) || (act_n_idx < size_vec.size() - 1));
+    return ((alloc_idx < alloc_vec.size() - 1) || (size_idx < size_vec.size() - 1));
 }
 
 
 void ActionIterator::advance(){
-    if(ratio_idx < ratio_vec.size() - 1){
-        ratio_idx++;
-	act_a = int(round(ratio_vec[ratio_idx]*act_n));
-	act_b = act_n - act_a;
+    if(alloc_idx < alloc_vec.size() - 1){
+        alloc_idx++;
+	act_a = alloc_vec[alloc_idx];
+	act_b = block_size - act_a;
     } else{
-        ratio_idx = 0;
-	act_n_idx++;
-	act_n = size_vec[act_n_idx] - size_vec[cur_n_idx];
-	act_a = int(round(ratio_vec[0]*act_n));
-        act_b = act_n - act_a;	
+        alloc_idx = 0;
+	size_idx++;
+	block_size = size_vec[size_idx] - size_vec[cur_size_idx];
+	alloc_vec = build_alloc_vec(ratio_vec, block_size);
+	act_a = alloc_vec[alloc_idx];
+        act_b = block_size - act_a;	
     }
 }
 
 
-int ActionIterator::action_size(){
-    return act_n;
+int ActionIterator::get_block_size(){
+    return block_size;
 }
 
 
@@ -74,4 +101,6 @@ int ActionIterator::action_b(){
 }
 
 
-
+int ActionIterator::get_cur_size_idx(){
+    return cur_size_idx;
+}

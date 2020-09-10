@@ -27,6 +27,11 @@ class BlockRARTable{
     public:
         BlockRARTable(int n_max, int n_incr);
 
+	BlockRARTable(){
+            results = std::vector< std::unordered_map<ContingencyTable, StateResult, CTHash>* >();
+	    n_vec = std::vector<int>();
+	}
+
 	std::vector<int> & get_n_vec(){ return n_vec; }
         
 	// Set one of the hash maps

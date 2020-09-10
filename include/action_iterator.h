@@ -9,32 +9,42 @@ class ActionIterator{
 
     private:
         // These variables encode the state of the iterator
-        std::vector<float> ratio_vec;
-        int ratio_idx;
         std::vector<int> size_vec;
-        int cur_n_idx;
-        int act_n_idx;
+        std::vector<float> ratio_vec;
+	std::vector<int> alloc_vec;
+        unsigned int alloc_idx;
+        unsigned int cur_size_idx;
+        unsigned int size_idx;
 
-	int act_n;
+	int block_size;
 	int act_a;
 	int act_b;
 
-	// TODO: differing ratios may yield equal (integer) allocations.
-	// We need to modify this to eliminate that redundancy.
 
     public:
         ActionIterator(float min_ratio, float max_ratio, int n_ratios,
                        std::vector<int> n_vec,
                        int n_idx);
 
+	ActionIterator(){
+            alloc_idx = 0;
+	    cur_size_idx = 0;
+	    size_idx = 0;
+	    block_size = 0;
+	    act_a = 0;
+	    act_b = 0;
+	}
+
         void reset(int n_idx);
         
-        bool is_finished();
+        bool not_finished();
         void advance();
 
-        int action_size();
+        int get_block_size();
         int action_a();
         int action_b();
+
+	int get_cur_size_idx();
 };
 
 #endif

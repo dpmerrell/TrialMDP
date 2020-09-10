@@ -22,6 +22,8 @@ class StateIterator{
 
     public:
 	StateIterator(BlockRARTable tab);
+	StateIterator();
+
         ContingencyTable value();
 	int get_cur_idx();
         void advance();

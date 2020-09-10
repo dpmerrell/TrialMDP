@@ -10,12 +10,15 @@
 #include <vector>
 #include <string>
 #include <iterator>
-#include "block_rar_table.h"
-#include "state_result.h"
-#include "contingency_iterator.h"
-#include "contingency_table.h"
-#include "state_iterator.h"
-#include "transition_iterator.h"
+#include "block_rar_opt.h"
+
+struct InputTable{
+    int n_patients;
+    int block_incr;
+
+    float error_cost;
+    float block_cost;
+};
 
 std::string v_to_str(std::vector<int>& v){
     std::string result = "[";
@@ -31,70 +34,34 @@ std::string v_to_str(std::vector<int>& v){
     return result;
 }	
 
-std::vector<int> parse_args(int argc, char* argv[]){
+InputTable parse_args(int argc, char* argv[]){
 
-    std::vector<int> result;
-    for(int i=1; i < argc; i++){
-        result.push_back(std::stoi(argv[i]));
-    }
+    InputTable result;
+    result.n_patients = std::stoi(argv[1]);
+    std::cout << "N_PATIENTS: " << result.n_patients << std::endl;
+    result.block_incr = std::stoi(argv[2]);
+    std::cout << "BLOCK_INCR: " << result.block_incr << std::endl;
+    result.error_cost = std::stof(argv[3]);
+    std::cout << "ERROR_COST: " << result.error_cost << std::endl;
+    result.block_cost = std::stof(argv[4]);
+    std::cout << "BLOCK_COST: " << result.block_cost << std::endl;
+    
     return result;
 }
 
 
 int main(int argc, char* argv[]){
 
+	// Parse command line args
+	InputTable args = parse_args(argc, argv);
 
-	// Reference cases:
-	// For arguments (patients=500, increment=25) 
-	// the results table takes up ~9GB of RAM.
-	// That gives a sense of the algorithm's memory cost.
-	// Similarly: (200, 1) -> 5GB of RAM.
-	// A reasonably good workstation can handle these loads.
-	//
-	// The time cost of the algorithm is a whole other question.
-	// It will depend on whether we figure out any clever tricks:
-	// pruning, etc. Parallelism will help.
-	std::vector<int> arg_vec = parse_args(argc, argv);
+	std::cout << "about to initialize solver" << std::endl;
+	BlockRAROpt solver = BlockRAROpt(args.n_patients, args.block_incr,
+			                 args.error_cost, args.block_cost);
+	std::cout << "Initialized solver; about to solve" << std::endl;
 
-	//std::cout << "about to initialize table" << std::endl;
-	BlockRARTable result_table = BlockRARTable(arg_vec[0], arg_vec[1]);
-	std::cout << "Initialized table" << std::endl;
-
-	StateIterator s_it = StateIterator(result_table);
-	std::cout << "Initialized state iterator" << std::endl;
-
-	std::cout << v_to_str(result_table.get_n_vec()) << std::endl;
-
-	int iter = 0;
-	while(s_it.not_finished()){
-	    //std::cout << iter << std::endl;
-	    int cur_idx = s_it.get_cur_idx();
-	    //std::cout << "SUCCESSFULLY GOT IDX: " << cur_idx << std::endl;
-
-	    ContingencyTable ctab = s_it.value();
-	    //ctab.pretty_print();
-            result_table(cur_idx, ctab) = StateResult {0, 0.0, 0.0, 0.0, 0.0, 0.0};
-	    //std::cout << "SUCCESSFULLY ADDED STATE TO TABLE" << std::endl;
-            s_it.advance();
-	    iter++;
-	    bool is_fin = !s_it.not_finished();
-	    //std::cout << "SUCCESSFULLY TESTED NOT_FINISHED: " << !is_fin << std::endl;
-	}
-	std::cout << "SUCCESSFULLY BROKE LOOP" << std::endl;
-
-	ContingencyTable cur_table = ContingencyTable {1,2,3,4};
-        TransitionIterator tr_it = TransitionIterator(cur_table, 100, 100);
-
-	float total_prob = 0.0;
-        while(tr_it.not_finished()){
-            std::cout << "prob: " << tr_it.prob() << std::endl;
-	    tr_it.value().pretty_print();
-
-	    tr_it.advance(); 
-
-	    total_prob += tr_it.prob();
-	}
-        std::cout << "TOTAL PROB: " << total_prob << std::endl;	
+	solver.solve();
+	std::cout << "solver completed" << std::endl;
 
 	return 0;
 }

@@ -11,6 +11,7 @@
 #include "state_result.h"
 #include "block_rar_table.h"
 #include "state_iterator.h"
+#include "action_iterator.h"
 #include <string>
 
 class BlockRAROpt{
@@ -28,7 +29,7 @@ class BlockRAROpt{
 
 	// Methods
 	StateResult terminal_reward(ContingencyTable ct);
-	StateResult max_expected_reward(ContingencyTable ct);
+	StateResult max_expected_reward(int cur_idx, ContingencyTable ct);
 
     public:
 
