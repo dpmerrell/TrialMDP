@@ -38,13 +38,9 @@ InputTable parse_args(int argc, char* argv[]){
 
     InputTable result;
     result.n_patients = std::stoi(argv[1]);
-    std::cout << "N_PATIENTS: " << result.n_patients << std::endl;
     result.block_incr = std::stoi(argv[2]);
-    std::cout << "BLOCK_INCR: " << result.block_incr << std::endl;
     result.error_cost = std::stof(argv[3]);
-    std::cout << "ERROR_COST: " << result.error_cost << std::endl;
     result.block_cost = std::stof(argv[4]);
-    std::cout << "BLOCK_COST: " << result.block_cost << std::endl;
     
     return result;
 }

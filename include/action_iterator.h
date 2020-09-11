@@ -14,7 +14,7 @@ class ActionIterator{
 	std::vector<int> alloc_vec;
         unsigned int alloc_idx;
         unsigned int cur_size_idx;
-        unsigned int size_idx;
+        unsigned int block_size_idx;
 
 	int block_size;
 	int act_a;
@@ -22,17 +22,28 @@ class ActionIterator{
 
 
     public:
+	// Constructors
         ActionIterator(float min_ratio, float max_ratio, int n_ratios,
                        std::vector<int> n_vec,
                        int n_idx);
-
 	ActionIterator(){
             alloc_idx = 0;
 	    cur_size_idx = 0;
-	    size_idx = 0;
+	    block_size_idx = 0;
 	    block_size = 0;
 	    act_a = 0;
 	    act_b = 0;
+	}
+        ActionIterator(const ActionIterator& other){
+            alloc_idx = other.alloc_idx;
+	    cur_size_idx = other.cur_size_idx;
+	    block_size_idx = other.block_size_idx;
+	    block_size = other.block_size;
+	    act_a = other.act_a;
+	    act_b = other.act_b;
+            size_vec = other.size_vec;
+            ratio_vec = other.ratio_vec;
+	    alloc_vec = other.alloc_vec;
 	}
 
         void reset(int n_idx);
@@ -44,7 +55,7 @@ class ActionIterator{
         int action_a();
         int action_b();
 
-	int get_cur_size_idx();
+	int get_block_size_idx();
 };
 
 #endif

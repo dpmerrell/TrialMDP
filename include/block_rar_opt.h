@@ -23,9 +23,9 @@ class BlockRAROpt{
 	float error_cost;
 	float block_cost;
 	
-        BlockRARTable results_table;
-        StateIterator state_iterator;
-	ActionIterator action_iterator;
+        BlockRARTable* results_table;
+        StateIterator* state_iterator;
+	ActionIterator* action_iterator;
 
 	// Methods
 	StateResult terminal_reward(ContingencyTable ct);
@@ -40,6 +40,8 @@ class BlockRAROpt{
 
 	void save_results(std::string out_filename);
 
+	// Destructor
+	~BlockRAROpt();
 };
 
 #endif

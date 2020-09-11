@@ -32,10 +32,10 @@ TransitionIterator::TransitionIterator(ContingencyTable ct, int size_a, int size
     a_counter = 0;
     b_counter = 0;
 
-    float p_a = float(cur_table.a1) / float(cur_table.a0 + cur_table.a1);
+    float p_a = float(cur_table.a1 + 1.0) / float(cur_table.a0 + cur_table.a1 + 2.0);
     a_probs = initialize_probs(a_size, p_a);
 
-    float p_b = float(cur_table.b1) / float(cur_table.b0 + cur_table.b1);
+    float p_b = float(cur_table.b1 + 1.0) / float(cur_table.b0 + cur_table.b1 + 2.0);
     b_probs = initialize_probs(b_size, p_b);
 
 }
@@ -46,7 +46,7 @@ ContingencyTable TransitionIterator::value(){
     short unsigned int a1 = cur_table.a1 + a_counter;
     short unsigned int b0 = cur_table.b0 + b_size - b_counter;
     short unsigned int b1 = cur_table.b1 + b_counter;
-    return ContingencyTable {a0, a1, b0, b1};
+    return ContingencyTable(a0, a1, b0, b1);
 
 }
 
@@ -57,7 +57,7 @@ float TransitionIterator::prob(){
 
 
 bool TransitionIterator::not_finished(){
-    return ((a_counter < a_size) || (b_counter < b_size));
+    return (a_counter <= a_size);
 }
 
 
@@ -66,14 +66,8 @@ void TransitionIterator::advance(){
         b_counter++;
     }
     else{
-        if (a_counter < a_size){
-            a_counter++;
-	    b_counter = 0;
-	}
-	else{
-            a_counter = 0;
-	    b_counter = 0;
-	}
+        a_counter++;
+        b_counter = 0;
     }
 }
 

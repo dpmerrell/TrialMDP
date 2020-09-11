@@ -15,6 +15,25 @@ struct ContingencyTable {
     short unsigned int b0;
     short unsigned int b1;
 
+    ContingencyTable(){
+        a0 = 0;
+	a1 = 0;
+	b0 = 0;
+	b1 = 0;
+    }
+    ContingencyTable(int other_a0, int other_a1, int other_b0, int other_b1){
+        a0 = other_a0;
+	a1 = other_a1;
+	b0 = other_b0;
+	b1 = other_b1;
+    }
+    ContingencyTable(const ContingencyTable& other){
+        a0 = other.a0;
+	a1 = other.a1;
+	b0 = other.b0;
+	b1 = other.b1;
+    }
+
     void pretty_print(){
         std::cout << a0 << "\t" << a1 << std::endl;
 	std::cout << b0 << "\t" << b1 << std::endl;

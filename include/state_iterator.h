@@ -21,8 +21,10 @@ class StateIterator{
 	int cur_count;
 
     public:
+	// constructors 
 	StateIterator(BlockRARTable tab);
 	StateIterator();
+	StateIterator(const StateIterator& si2);
 
         ContingencyTable value();
 	int get_cur_idx();

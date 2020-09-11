@@ -4,10 +4,10 @@
 // Implementation of StateIterator class
 
 #include "state_iterator.h"
-#include <vector>
 #include "contingency_iterator.h"
 #include "contingency_table.h"
 #include "block_rar_table.h"
+#include <vector>
 #include <iostream>
 
 
@@ -18,12 +18,22 @@ StateIterator::StateIterator(BlockRARTable tab){
     cur_count = 1;
 }
 
+
 StateIterator::StateIterator(){
     n_vec = std::vector<int>();
     cur_idx = 0;
     cur_iter = NULL;
     cur_count = 0;
 }
+
+
+StateIterator::StateIterator(const StateIterator& other){
+    n_vec = other.n_vec;
+    cur_idx = other.cur_idx;
+    cur_iter = other.cur_iter;
+    cur_count = other.cur_count;
+}
+
 
 ContingencyTable StateIterator::value(){
     return cur_iter->value();

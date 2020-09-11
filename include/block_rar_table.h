@@ -32,6 +32,11 @@ class BlockRARTable{
 	    n_vec = std::vector<int>();
 	}
 
+	BlockRARTable(const BlockRARTable& other){
+            results = other.results;
+	    n_vec = other.n_vec;
+	}
+
 	std::vector<int> & get_n_vec(){ return n_vec; }
         
 	// Set one of the hash maps
