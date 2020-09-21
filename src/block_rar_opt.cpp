@@ -7,6 +7,9 @@
 #include "state_result.h"
 #include "transition_iterator.h"
 #include "state_iterator.h"
+#include <cstring>
+#include <string>
+#include <sqlite3.h>
 #include <cmath>
 #include <limits>
 
@@ -196,10 +199,95 @@ void BlockRAROpt::solve(){
 }
 
 
-void BlockRAROpt::save_results(std::string out_filename){
-    return;
-}
+void BlockRAROpt::to_sqlite(char* db_fname, int chunk_size=10000){
 
+    // Make database connection pointer
+    sqlite3* db;
+
+    try{
+        // Connect to database
+        int conn_result = 1;
+        conn_result = sqlite3_open(db_fname, &db);
+        if(conn_result != 0){ throw 1; }
+
+        // Build table in database
+	std::string build_expr = "CREATE TABLE RESULTS("\
+            	              	"A0 INT, A1 INT, B0 INT, B1 INT, "\
+				"BlockSize INT, AAllocation INT, "\
+				"Power REAL, Failures REAL, RemainingBlocks REAL, Reward REAL, "\
+            	               	"PRIMARY KEY (A0, A1, B0, B1)"\
+            	               	");";
+        int build_result = 1;
+        build_result = sqlite3_exec(db, build_expr.c_str(), NULL, NULL, NULL);
+        if (build_result != 0){ throw 2; }
+
+	//
+	std::string transaction_start = "BEGIN TRANSACTION;\n";
+	std::string line_start = "INSERT INTO RESULTS VALUES (";
+        std::string transaction_end = " COMMIT;";
+
+	// Iterate over the results
+	StateIterator result_iter = StateIterator(*(results_table));
+        while(result_iter.not_finished()){
+
+	    // Prepare a chunk of INSERTs...
+	    std::string insert_expr = transaction_start;
+            int chunk_idx = 0;
+
+	    while(result_iter.not_finished() && chunk_idx < chunk_size){
+
+		// Get the contingency table and corresponding results
+                ContingencyTable cur_table = result_iter.value();
+	        int cur_idx = result_iter.get_cur_idx();
+                StateResult cur_results = (*results_table)(cur_idx, cur_table);
+	                
+	        // Add a line to the transaction
+		insert_expr += line_start;
+		insert_expr += std::to_string(cur_table.a0) + ", "; 
+		insert_expr += std::to_string(cur_table.a1) + ", "; 
+		insert_expr += std::to_string(cur_table.b0) + ", "; 
+		insert_expr += std::to_string(cur_table.b1) + ", "; 
+		insert_expr += std::to_string(cur_results.next_block_size) + ", "; 
+		insert_expr += std::to_string(cur_results.next_a_allocation) + ", "; 
+		insert_expr += std::to_string(cur_results.statistical_power) + ", "; 
+		insert_expr += std::to_string(cur_results.n_failures) + ", "; 
+		insert_expr += std::to_string(cur_results.remaining_blocks) + ", "; 
+		insert_expr += std::to_string(cur_results.reward) + ");\n"; 
+
+		// Move to the next result
+                result_iter.advance();
+
+	    }
+	    insert_expr += transaction_end;
+
+	    // INSERT the chunk
+            int insert_result = 1;
+            insert_result = sqlite3_exec(db, insert_expr.c_str(), NULL, NULL, NULL);
+            if (insert_result != 0){ throw 3; }
+	}
+        // Close connection
+        sqlite3_close(db);
+
+    }
+    catch(int code){ 
+        switch(code){
+	    case 1:
+	        std::cerr << "`to_sqlite`: failed to connect to SQLite database at location " << db_fname << std::endl;
+		break;
+	    case 2:
+		std::cerr << "`to_sqlite`: failed to build table RESULTS in database." << std::endl; 
+		break;
+	    case 3: 
+		std::cerr << "`to_sqlite`: failed to insert rows into table RESULTS." << std::endl; 
+		break;
+	    default: 
+		std::cerr << "`to_sqlite`: method failed." << std::endl; 
+		break;
+        }
+    }
+
+}
+    
 
 BlockRAROpt::~BlockRAROpt(){
     delete state_iterator;

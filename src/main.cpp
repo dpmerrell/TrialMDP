@@ -18,6 +18,8 @@ struct InputTable{
 
     float error_cost;
     float block_cost;
+
+    char* sqlite_fname;
 };
 
 std::string v_to_str(std::vector<int>& v){
@@ -41,6 +43,7 @@ InputTable parse_args(int argc, char* argv[]){
     result.block_incr = std::stoi(argv[2]);
     result.error_cost = std::stof(argv[3]);
     result.block_cost = std::stof(argv[4]);
+    result.sqlite_fname = argv[5];
     
     return result;
 }
@@ -58,6 +61,9 @@ int main(int argc, char* argv[]){
 
 	solver.solve();
 	std::cout << "solver completed" << std::endl;
+
+	solver.to_sqlite(args.sqlite_fname, 10);
+	std::cout << "Saved to file: " << args.sqlite_fname << std::endl;
 
 	return 0;
 }

@@ -5,7 +5,7 @@ BUILD_DIR = build
 BIN_DIR = bin
 
 CXX = g++
-CXXFLAGS = -Wall -I $(INCLUDE_DIR)/
+CXXFLAGS = -Wall -I $(INCLUDE_DIR)/ 
 
 
 ###################################
@@ -21,8 +21,7 @@ debug: $(BIN_DIR)/main
 # MAIN BINARY
 $(BIN_DIR)/main: $(BUILD_DIR)/main.o $(BUILD_DIR)/block_rar_opt.o $(BUILD_DIR)/action_iterator.o $(BUILD_DIR)/transition_iterator.o $(BUILD_DIR)/state_iterator.o $(BUILD_DIR)/contingency_iterator.o $(BUILD_DIR)/block_rar_table.o
 	mkdir -p $(BIN_DIR)
-	$(CXX) $(CXXFLAGS) -o $@ $?
-
+	$(CXX) $(CXXFLAGS) -o $@ $? -lsqlite3
 
 ###################################
 # OBJECT FILES

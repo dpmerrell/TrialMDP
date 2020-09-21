@@ -38,7 +38,7 @@ class BlockRAROpt{
 
 	void solve();
 
-	void save_results(std::string out_filename);
+	void to_sqlite(char* db_fname, int chunk_size);
 
 	// Destructor
 	~BlockRAROpt();
