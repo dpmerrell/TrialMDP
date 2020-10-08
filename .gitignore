@@ -2,3 +2,8 @@
 
 bin/*
 *.o
+*.so
+
+# R stuff
+.Rproj.user
+.Rhistory
