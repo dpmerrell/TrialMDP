@@ -1,4 +1,6 @@
-
+// contingency_iterator.cpp
+// (c) 2020 David Merrell
+//
 
 #include "contingency_iterator.h"
 #include <iostream>

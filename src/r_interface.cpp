@@ -1,3 +1,7 @@
+// r_interface.cpp
+// (c) 2020 David Merrell
+//
+
 #include "block_rar_opt.h"
 #include <string>
 #include <iostream>

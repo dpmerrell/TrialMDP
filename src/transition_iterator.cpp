@@ -1,3 +1,6 @@
+// transition_iterator.cpp
+// (c) 2020 David Merrell
+//
 
 #define __STDCPP_WANT_MATH_SPEC_FUNCS__ 1
 

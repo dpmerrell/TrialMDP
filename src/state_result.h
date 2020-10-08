@@ -1,3 +1,6 @@
+// state_result.h
+// (c) David Merrell 2020-08
+//
 
 #ifndef _STATE_RESULT_H
 #define _STATE_RESULT_H

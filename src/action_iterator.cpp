@@ -1,3 +1,7 @@
+// action_iterator.cpp
+// (c) 2020 David Merrell
+//
+
 
 #include <vector>
 #include <cmath>

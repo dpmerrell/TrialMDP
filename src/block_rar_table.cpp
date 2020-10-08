@@ -1,3 +1,6 @@
+// block_rar_table.cpp
+// (c) 2020 David Merrell
+//
 
 #include "block_rar_table.h"
 #include "contingency_table.h"

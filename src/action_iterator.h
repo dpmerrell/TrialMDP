@@ -1,3 +1,6 @@
+// action_iterator.h
+// (c) 2020 David Merrell
+//
 
 #ifndef _ACTION_ITERATOR_H
 #define _ACTION_ITERATOR_H

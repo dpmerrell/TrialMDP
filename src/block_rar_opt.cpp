@@ -1,4 +1,5 @@
 // block_rar_opt.cpp
+// (c) 2020 David Merrell
 //
 // Implementation of BlockRAROpt class
 
