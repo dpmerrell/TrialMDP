@@ -1,7 +1,8 @@
 # blockRARopt
 
-An optimization solver for block RAR RCT design
+An optimization solver for block RAR RCT design -- all wrapped up in an R package.
 
+[See these Google slides for more information.](https://docs.google.com/presentation/d/15oAJu6PEweWosXLDnaXX5xcuBJHCEPyHMZB1zDjJXd0/edit?usp=sharing)
 
 ## Installation
 _Note: So far I've only tested this on Ubuntu. We hope to support Mac and Windows in the future._
