@@ -8,12 +8,13 @@ _Note: So far I've only tested this on Ubuntu. We hope to support Mac and Window
 
 Follow these steps:
 
-1. Install the SQLite3 dev libraries. E.g., for Ubuntu:
+* Install the SQLite3 dev libraries. E.g., for Ubuntu:
 ```
 $ sudo apt install sqlite3-dev
 ```
 The `blockRARopt` package uses SQLite to write its output to a database.
-2. Install the `blockRARopt` package. We aren't on CRAN yet -- for now we recommend using `devtools`:
+
+* Install the `blockRARopt` package. We aren't on CRAN yet -- for now we recommend using `devtools`:
 ```R
 > library("devtools")
 Loading required package: usethis
@@ -21,7 +22,7 @@ Loading required package: usethis
 ```
 
 ## Basic usage
-```
+```R
 > library("blockRARopt")
 > blockRARopt::block_rar_opt(10, 1, 0.0, 100.0, "results.sqlite")
 about to initialize solver
