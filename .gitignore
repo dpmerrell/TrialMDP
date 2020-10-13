@@ -1,5 +1,4 @@
 # C++ build junk
-
 bin/*
 *.o
 *.so
@@ -7,3 +6,8 @@ bin/*
 # R stuff
 .Rproj.user
 .Rhistory
+.RData
+*.Rproj
+
+# Random junk
+*.sqlite
