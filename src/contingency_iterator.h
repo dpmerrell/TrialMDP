@@ -1,8 +1,17 @@
 // contingency_iterator.h
 // (c) 2020-08 David Merrell
 //
-// Definition of a class that iterates over
-// contingency tables of a given size.
+// Definition of two classes:
+// 
+//   * SimplexIterator
+//     - class that iterates all nonnegative integer vectors
+//       constrained s.t. they sum to a given number, `total`.
+// 
+//   * ContingencyIterator
+//     - A thin wrapper around SimplexIterator, which iterates
+//       all possible contingency tables of a given size.
+//     - I.e., we iterate all 2x2 contingency tables with N patients
+//       by using the 4D SimplexIterator with `total`=N.
 //
 
 #ifndef _CONT_ITER_H

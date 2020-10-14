@@ -1,8 +1,11 @@
 // state_iterator.h
 // (c) 2020-08 David Merrell
 //
-// Defines the StateIterator class -- an object that 
-// iterates over the states defined by a BlockRARTable
+// Defines the StateIterator class -- an iterator
+// over all possible contingency tables of size 1 through
+// N_patients (though it traverses them in order of 
+// *decreasing* size).
+// 
 
 # ifndef _STATE_ITERATOR_H
 # define _STATE_ITERATOR_H

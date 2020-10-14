@@ -1,7 +1,13 @@
 // transition_iterator.h
 // (c) 2020-09 David Merrell 
 // 
-
+// Defines an iterator over the possible transitions
+// that may occur, given the design of the next block.
+//
+// The iterator yields every possible outcome, as well
+// as their probabilities. This allows the algorithm to 
+// compute expected values of outcomes and maximize 
+// expected reward.
 
 #ifndef _TRANSITION_ITERATOR_H
 #define _TRANSITION_ITERATOR_H

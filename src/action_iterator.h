@@ -1,6 +1,14 @@
 // action_iterator.h
 // (c) 2020 David Merrell
 //
+// Defines an iterator over possible blocks.
+// I.e., it iterates over the possible 
+//   * block sizes and
+//   * treatment allocations
+// 
+// given the number of patients we've already treated
+// and the remaining number of patients in the trial.
+//
 
 #ifndef _ACTION_ITERATOR_H
 #define _ACTION_ITERATOR_H

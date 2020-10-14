@@ -1,6 +1,11 @@
 // state_result.h
 // (c) David Merrell 2020-08
 //
+// A simple struct that stores the optimal
+// policy for a contingency table. We use this
+// to store the outputs of the algorithm.
+// Each of these eventually becomes a row in a
+// SQLite database.
 
 #ifndef _STATE_RESULT_H
 #define _STATE_RESULT_H

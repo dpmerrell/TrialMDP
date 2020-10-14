@@ -2,12 +2,12 @@
 // (c) David Merrell 2020-08
 //
 // A class that stores all of the results
-// for a block RAR design problem. 
+// for a block RAR RCT design problem. 
 // I.e., for every possible state it stores
 // the best action and the expected reward.
 // 
 // It's essentially a vector of hash maps;
-// one map for each 
+// one map for every possible size of contingency table. 
 
 #ifndef _BLOCK_RAR_TABLE_H
 #define _BLOCK_RAR_TABLE_H
