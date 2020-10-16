@@ -34,6 +34,7 @@ class BlockRAROpt{
         int block_incr;
 	float error_cost;
 	float block_cost;
+        float smoothing;
 	
         BlockRARTable* results_table;
         StateIterator* state_iterator;
@@ -46,7 +47,7 @@ class BlockRAROpt{
     public:
 
         // Constructor
-	BlockRAROpt(int n_patients, int block_incr, float error_cost, float block_cost);
+	BlockRAROpt(int n_patients, int block_incr, float error_cost, float block_cost, float sm=1e-6);
 
 	void solve();
 

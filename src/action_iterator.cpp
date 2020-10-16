@@ -6,7 +6,7 @@
 #include <vector>
 #include <cmath>
 #include "action_iterator.h"
-
+#include <iostream>
 
 std::vector<int> build_alloc_vec(std::vector<float> ratio_vec, int block_size){
 
@@ -19,7 +19,6 @@ std::vector<int> build_alloc_vec(std::vector<float> ratio_vec, int block_size){
             result.push_back(cv);
 	}
     }
-    
 
     return result;
 }
@@ -34,7 +33,6 @@ ActionIterator::ActionIterator(float min_ratio, float max_ratio, int n_ratios,
     float ratio_incr = (max_ratio - min_ratio)/(n_ratios - 1.0);
     for(int i=0; i < n_ratios; i++){
         ratio_vec[i] = min_ratio + (i*ratio_incr);
-	 
     }
 
     // Initiate block sizes
@@ -42,7 +40,6 @@ ActionIterator::ActionIterator(float min_ratio, float max_ratio, int n_ratios,
     cur_size_idx = n_idx;
     block_size_idx = cur_size_idx + 1;
     block_size = size_vec[block_size_idx] - size_vec[cur_size_idx];
-    
     // Initiate allocations
     alloc_vec = build_alloc_vec(ratio_vec, block_size); 
     alloc_idx = 0;

@@ -32,7 +32,7 @@ class TransitionIterator {
 	std::vector<float> b_probs;
 
     public:
-        TransitionIterator(ContingencyTable ct, int a_A, int a_B);
+        TransitionIterator(ContingencyTable ct, int a_A, int a_B, float smoothing=1e-6);
 	float prob();
 	ContingencyTable value();
 	bool not_finished();

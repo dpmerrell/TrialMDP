@@ -12,15 +12,18 @@ using namespace Rcpp;
 // [[Rcpp::export]]
 void block_rar_opt(int n_patients, int block_incr,
                    double error_cost, double block_cost,
-                   std::string sqlite_fname) {
+                   std::string sqlite_fname,
+                   float smoothing=1e-6) {
   
   std::cout << "about to initialize solver" << std::endl;
   BlockRAROpt solver = BlockRAROpt(n_patients, block_incr,
-                                   float(error_cost), float(block_cost));
-  std::cout << "Initialized solver; about to solve" << std::endl;
+                                   float(error_cost), float(block_cost),
+                                   smoothing);
+  std::cout << "Initialized solver." << std::endl; 
+  std::cout << "Solving." << std::endl;
   
   solver.solve();
-  std::cout << "solver completed" << std::endl;
+  std::cout << "Solver completed." << std::endl;
   
   char* fname = new char[sqlite_fname.length() + 1];
   strcpy(fname, sqlite_fname.c_str());

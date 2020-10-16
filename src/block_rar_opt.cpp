@@ -8,6 +8,7 @@
 #include "state_result.h"
 #include "transition_iterator.h"
 #include "state_iterator.h"
+#include <iostream>
 #include <cstring>
 #include <string>
 #include <sqlite3.h>
@@ -16,10 +17,16 @@
 
 
 
-float statistical_power(float p_a, float p_b, float P, float N_a, float N_b, float N){
+float wald_statistic_a(float p_a, float p_b, float P, float N_a, float N_b, float N){
 
     // The Wald statistic
-    float W = ( pow(p_a - p_b, 2.0) / (P * (1.0 - P)) ) * N_a*N_b / N;
+    if (N_a == 0.0 || N_b == 0.0){
+        return -std::numeric_limits<float>::infinity();
+    }
+    float W = 0.0;
+    if (P != 0.0 && P != 1.0){
+        W = ( pow(p_a - p_b, 2.0) / (P * (1.0 - P)) ) * N_a*N_b / N;
+    }
     // (is asymptotically chi-square(df=1) under null hypothesis)
 
     // For now, just return the Wald statistic.
@@ -41,14 +48,23 @@ StateResult BlockRAROpt::terminal_reward(ContingencyTable ct){
     float N_a = ct.a0 + ct.a1;
     float N_b = ct.b0 + ct.b1;
     float N = N_a + N_b;
-    float p_a = float(ct.a1 + 1.0) / (N_a + 2.0);
-    float p_b = float(ct.b1 + 1.0) / (N_b + 2.0);
-    float P = float(ct.a1 + ct.b1 + 2.0) / (N + 4.0);
+    float p_a = 0.5;
+    if (N_a != 0.0){
+        p_a = float(ct.a1) / N_a;
+    } 
+    float p_b = 0.5;
+    if (N_b != 0.0){
+        p_b = float(ct.b1) / N_b;
+    }
+    float P = 0.5;
+    if (N != 0.0){
+        P = float(ct.a1 + ct.b1) / N;
+    }
 
     // Compute statistical power
-    float power = statistical_power(p_a, p_b, P, N_a, N_b, N);
+    float power = wald_statistic_a(p_a, p_b, P, N_a, N_b, N);
 
-    // Compute the "error": the expected number of patients
+    // Compute the "failures": the expected number of patients
     // that would have received a positive outcome, had they 
     // been given the superior treatment.
     float err;
@@ -57,6 +73,14 @@ StateResult BlockRAROpt::terminal_reward(ContingencyTable ct){
     } else{
         err = (p_b - p_a)*N_a;
     }
+    //if(p_a > p_b){
+    //    err = N_b;
+    //} else if (p_a < p_b){
+    //    err = N_a;
+    //} else{
+    //    err = 0.0;
+    //}
+
 
     // Compute the linear combination of those
     // factors
@@ -89,7 +113,7 @@ StateResult BlockRAROpt::max_expected_reward(int cur_idx, ContingencyTable ct){
         // Get the size index of the resulting contingency table
 	int result_size_idx = action_iterator->get_block_size_idx();
 
-	float prob = 0.0;
+        float prob = 0.0;
         // Initialize expected reward:
 	float exp_power = 0.0;
 	float exp_err = 0.0;
@@ -99,7 +123,8 @@ StateResult BlockRAROpt::max_expected_reward(int cur_idx, ContingencyTable ct){
 	// Compute the expected reward for this action,
 	// w.r.t. the randomness of the transition
 	TransitionIterator tr_it = TransitionIterator(ct, action_iterator->action_a(),
-			                                  action_iterator->action_b());
+			                                  action_iterator->action_b(),
+                                                          smoothing);
 	while(tr_it.not_finished()){
 
 	    // Get the result struct associated with this state
@@ -140,16 +165,17 @@ StateResult BlockRAROpt::max_expected_reward(int cur_idx, ContingencyTable ct){
 
 
 // Constructor
-BlockRAROpt::BlockRAROpt(int n_p, int b_i, float e_c, float b_c){
+BlockRAROpt::BlockRAROpt(int n_p, int b_i, float e_c, float b_c, float sm){
 
     n_patients = n_p;
     block_incr = b_i;
     error_cost = e_c;
     block_cost = b_c;
+    smoothing = sm;
 
     results_table = new BlockRARTable(n_p, b_i); 
     state_iterator = new StateIterator(*(results_table)); 
-    action_iterator = new ActionIterator(0.0, 1.0, 11, 
+    action_iterator = new ActionIterator(0.2, 0.8, 7, 
 		                         results_table->get_n_vec(),
                                          0);
 }
@@ -199,6 +225,17 @@ void BlockRAROpt::solve(){
 
 }
 
+
+std::string fl_to_str(float x){
+
+    std::string s;
+    if (std::isfinite(x)){
+        s = std::to_string(x);
+    }else{
+        s = "NULL";
+    }
+    return s;
+}
 
 void BlockRAROpt::to_sqlite(char* db_fname, int chunk_size=10000){
 
@@ -250,10 +287,10 @@ void BlockRAROpt::to_sqlite(char* db_fname, int chunk_size=10000){
 		insert_expr += std::to_string(cur_table.b1) + ", "; 
 		insert_expr += std::to_string(cur_results.next_block_size) + ", "; 
 		insert_expr += std::to_string(cur_results.next_a_allocation) + ", "; 
-		insert_expr += std::to_string(cur_results.statistical_power) + ", "; 
+		insert_expr += fl_to_str(cur_results.statistical_power) + ", "; 
 		insert_expr += std::to_string(cur_results.n_failures) + ", "; 
 		insert_expr += std::to_string(cur_results.remaining_blocks) + ", "; 
-		insert_expr += std::to_string(cur_results.reward) + ");\n"; 
+		insert_expr += fl_to_str(cur_results.reward) + ");\n"; 
 
 		// Move to the next result
                 result_iter.advance();
