@@ -24,6 +24,7 @@
 #include "block_rar_table.h"
 #include "state_iterator.h"
 #include "action_iterator.h"
+#include "test_statistic.h"
 #include <string>
 
 class BlockRAROpt{
@@ -34,11 +35,13 @@ class BlockRAROpt{
         int block_incr;
 	float error_cost;
 	float block_cost;
-        float smoothing;
+        float prior_p;
+        float prior_strength;
 	
         BlockRARTable* results_table;
         StateIterator* state_iterator;
 	ActionIterator* action_iterator;
+        TestStatistic* test_statistic = NULL;
 
 	// Methods
 	StateResult terminal_reward(ContingencyTable ct);
@@ -47,7 +50,8 @@ class BlockRAROpt{
     public:
 
         // Constructor
-	BlockRAROpt(int n_patients, int block_incr, float error_cost, float block_cost, float sm=1e-6);
+	BlockRAROpt(int n_patients, int block_incr, float error_cost, float block_cost, 
+                    float pr_p=0.5, float pr_s=1e-6, std::string ts="wald");
 
 	void solve();
 

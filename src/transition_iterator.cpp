@@ -25,7 +25,7 @@ std::vector<float> initialize_probs(int N, float p){
     return probs;
 }
 
-TransitionIterator::TransitionIterator(ContingencyTable ct, int size_a, int size_b, float smoothing){
+TransitionIterator::TransitionIterator(ContingencyTable ct, int size_a, int size_b, float pr_p, float pr_s){
 
     cur_table = ct;
 
@@ -35,10 +35,12 @@ TransitionIterator::TransitionIterator(ContingencyTable ct, int size_a, int size
     a_counter = 0;
     b_counter = 0;
 
-    float p_a = (float(cur_table.a1) + smoothing) / (float(cur_table.a0 + cur_table.a1) + 2.0*smoothing);
+    float smoothing = pr_p*pr_s;
+
+    float p_a = (float(cur_table.a1) + smoothing) / (float(cur_table.a0 + cur_table.a1) + pr_s);
     a_probs = initialize_probs(a_size, p_a);
 
-    float p_b = (float(cur_table.b1) + smoothing) / (float(cur_table.b0 + cur_table.b1) + 2.0*smoothing);
+    float p_b = (float(cur_table.b1) + smoothing) / (float(cur_table.b0 + cur_table.b1) + pr_s);
     b_probs = initialize_probs(b_size, p_b);
 
 }

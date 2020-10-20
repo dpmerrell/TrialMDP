@@ -6,8 +6,8 @@
 using namespace Rcpp;
 
 // block_rar_opt
-void block_rar_opt(int n_patients, int block_incr, double error_cost, double block_cost, std::string sqlite_fname, float smoothing);
-RcppExport SEXP _blockRARopt_block_rar_opt(SEXP n_patientsSEXP, SEXP block_incrSEXP, SEXP error_costSEXP, SEXP block_costSEXP, SEXP sqlite_fnameSEXP, SEXP smoothingSEXP) {
+void block_rar_opt(int n_patients, int block_incr, double error_cost, double block_cost, std::string sqlite_fname, float prior_prob, float prior_strength, std::string test_stat);
+RcppExport SEXP _blockRARopt_block_rar_opt(SEXP n_patientsSEXP, SEXP block_incrSEXP, SEXP error_costSEXP, SEXP block_costSEXP, SEXP sqlite_fnameSEXP, SEXP prior_probSEXP, SEXP prior_strengthSEXP, SEXP test_statSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type n_patients(n_patientsSEXP);
@@ -15,14 +15,16 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type error_cost(error_costSEXP);
     Rcpp::traits::input_parameter< double >::type block_cost(block_costSEXP);
     Rcpp::traits::input_parameter< std::string >::type sqlite_fname(sqlite_fnameSEXP);
-    Rcpp::traits::input_parameter< float >::type smoothing(smoothingSEXP);
-    block_rar_opt(n_patients, block_incr, error_cost, block_cost, sqlite_fname, smoothing);
+    Rcpp::traits::input_parameter< float >::type prior_prob(prior_probSEXP);
+    Rcpp::traits::input_parameter< float >::type prior_strength(prior_strengthSEXP);
+    Rcpp::traits::input_parameter< std::string >::type test_stat(test_statSEXP);
+    block_rar_opt(n_patients, block_incr, error_cost, block_cost, sqlite_fname, prior_prob, prior_strength, test_stat);
     return R_NilValue;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_blockRARopt_block_rar_opt", (DL_FUNC) &_blockRARopt_block_rar_opt, 6},
+    {"_blockRARopt_block_rar_opt", (DL_FUNC) &_blockRARopt_block_rar_opt, 8},
     {NULL, NULL, 0}
 };
 

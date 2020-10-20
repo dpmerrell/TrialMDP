@@ -13,12 +13,16 @@ using namespace Rcpp;
 void block_rar_opt(int n_patients, int block_incr,
                    double error_cost, double block_cost,
                    std::string sqlite_fname,
-                   float smoothing=1e-6) {
-  
+                   float prior_prob=0.5,
+                   float prior_strength=1.0,
+                   std::string test_stat="wald") {
+
+
   std::cout << "about to initialize solver" << std::endl;
   BlockRAROpt solver = BlockRAROpt(n_patients, block_incr,
                                    float(error_cost), float(block_cost),
-                                   smoothing);
+                                   prior_prob, prior_strength, 
+                                   test_stat);
   std::cout << "Initialized solver." << std::endl; 
   std::cout << "Solving." << std::endl;
   
@@ -32,6 +36,7 @@ void block_rar_opt(int n_patients, int block_incr,
   std::cout << "Saved to file: " << sqlite_fname << std::endl;
   
   delete[] fname;
+  
 }
 
 

@@ -8,35 +8,13 @@
 #include "state_result.h"
 #include "transition_iterator.h"
 #include "state_iterator.h"
+#include "test_statistic.h"
 #include <iostream>
 #include <cstring>
 #include <string>
 #include <sqlite3.h>
 #include <cmath>
 #include <limits>
-
-
-
-float wald_statistic_a(float p_a, float p_b, float P, float N_a, float N_b, float N){
-
-    // The Wald statistic
-    if (N_a == 0.0 || N_b == 0.0){
-        return -std::numeric_limits<float>::infinity();
-    }
-    float W = 0.0;
-    if (P != 0.0 && P != 1.0){
-        W = ( pow(p_a - p_b, 2.0) / (P * (1.0 - P)) ) * N_a*N_b / N;
-    }
-    // (is asymptotically chi-square(df=1) under null hypothesis)
-
-    // For now, just return the Wald statistic.
-    // We probably ought to return a different quantity
-    // that allows us to talk more naturally about tradeoffs between
-    // statistical power and other terms of the objective--
-    // some monotone transformation of W.
-    // (e.g., an exceedence probability?)
-    return W;   
-}
 
 
 /**
@@ -62,7 +40,7 @@ StateResult BlockRAROpt::terminal_reward(ContingencyTable ct){
     }
 
     // Compute statistical power
-    float power = wald_statistic_a(p_a, p_b, P, N_a, N_b, N);
+    float power = (*test_statistic)(p_a, p_b, P, N_a, N_b, N);
 
     // Compute the "failures": the expected number of patients
     // that would have received a positive outcome, had they 
@@ -73,14 +51,6 @@ StateResult BlockRAROpt::terminal_reward(ContingencyTable ct){
     } else{
         err = (p_b - p_a)*N_a;
     }
-    //if(p_a > p_b){
-    //    err = N_b;
-    //} else if (p_a < p_b){
-    //    err = N_a;
-    //} else{
-    //    err = 0.0;
-    //}
-
 
     // Compute the linear combination of those
     // factors
@@ -124,7 +94,7 @@ StateResult BlockRAROpt::max_expected_reward(int cur_idx, ContingencyTable ct){
 	// w.r.t. the randomness of the transition
 	TransitionIterator tr_it = TransitionIterator(ct, action_iterator->action_a(),
 			                                  action_iterator->action_b(),
-                                                          smoothing);
+                                                          prior_p, prior_strength);
 	while(tr_it.not_finished()){
 
 	    // Get the result struct associated with this state
@@ -165,13 +135,21 @@ StateResult BlockRAROpt::max_expected_reward(int cur_idx, ContingencyTable ct){
 
 
 // Constructor
-BlockRAROpt::BlockRAROpt(int n_p, int b_i, float e_c, float b_c, float sm){
+BlockRAROpt::BlockRAROpt(int n_p, int b_i, float e_c, float b_c, float pr_p, float pr_s, std::string ts){
 
     n_patients = n_p;
     block_incr = b_i;
     error_cost = e_c;
     block_cost = b_c;
-    smoothing = sm;
+    prior_p = pr_p;
+    prior_strength = pr_s;
+
+    if (ts == "wald"){
+      test_statistic = new WaldStatistic();
+    }else{
+      std::cerr << ts << " not a valid value for test statistic." << std::endl;
+      throw(1);
+    }
 
     results_table = new BlockRARTable(n_p, b_i); 
     state_iterator = new StateIterator(*(results_table)); 
@@ -252,7 +230,7 @@ void BlockRAROpt::to_sqlite(char* db_fname, int chunk_size=10000){
 	std::string build_expr = "CREATE TABLE RESULTS("\
             	              	"A0 INT, A1 INT, B0 INT, B1 INT, "\
 				"BlockSize INT, AAllocation INT, "\
-				"Power REAL, Failures REAL, RemainingBlocks REAL, Reward REAL, "\
+				"TestStatistic REAL, Failures REAL, RemainingBlocks REAL, Reward REAL, "\
             	               	"PRIMARY KEY (A0, A1, B0, B1)"\
             	               	");";
         int build_result = 1;
@@ -331,4 +309,5 @@ BlockRAROpt::~BlockRAROpt(){
     delete state_iterator;
     delete action_iterator;
     delete results_table;
+    delete test_statistic;
 }
