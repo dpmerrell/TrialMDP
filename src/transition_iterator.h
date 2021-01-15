@@ -13,8 +13,8 @@
 #define _TRANSITION_ITERATOR_H
 
 #include "contingency_table.h"
+#include "transition_dist.h" 
 #include <vector>
-
 /**
  * For a given state and action, iterate the 
  * possible outcomes with their corresponding probabilities
@@ -28,15 +28,17 @@ class TransitionIterator {
 	short unsigned int b_size;
 	short unsigned int a_counter;
 	short unsigned int b_counter;
-	std::vector<float> a_probs;
-	std::vector<float> b_probs;
+        TransitionDist* transition_distribution;
 
     public:
-        TransitionIterator(ContingencyTable ct, int a_A, int a_B, float pr_p=0.5, float pr_s=1e-6);
+        TransitionIterator(ContingencyTable ct, int a_A, int a_B);
 	float prob();
 	ContingencyTable value();
 	bool not_finished();
 	void advance();
+
+        short unsigned int get_a_counter(){ return a_counter; }
+        short unsigned int get_b_counter(){ return b_counter; }
 
 };
 

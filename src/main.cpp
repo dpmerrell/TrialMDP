@@ -16,7 +16,7 @@ struct InputTable{
     int n_patients;
     int block_incr;
 
-    float error_cost;
+    float failure_cost;
     float block_cost;
 
     char* sqlite_fname;
@@ -41,7 +41,7 @@ InputTable parse_args(int argc, char* argv[]){
     InputTable result;
     result.n_patients = std::stoi(argv[1]);
     result.block_incr = std::stoi(argv[2]);
-    result.error_cost = std::stof(argv[3]);
+    result.failure_cost = std::stof(argv[3]);
     result.block_cost = std::stof(argv[4]);
     result.sqlite_fname = argv[5];
     
@@ -56,7 +56,11 @@ int main(int argc, char* argv[]){
 
 	std::cout << "about to initialize solver" << std::endl;
 	BlockRAROpt solver = BlockRAROpt(args.n_patients, args.block_incr,
-			                 args.error_cost, args.block_cost);
+			                 args.failure_cost, args.block_cost,
+                                         1.0, 1.0,
+                                         1.0, 1.0,
+                                         "binom",
+                                         "wald");
 	std::cout << "Initialized solver; about to solve" << std::endl;
 
 	solver.solve();

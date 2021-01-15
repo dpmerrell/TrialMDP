@@ -8,7 +8,7 @@
 //   * n_patients: the number of patients in the trial
 //   * block_incr: an increment for block sizes 
 //                 (all block sizes are multiples of this number)
-//   * error_cost: the cost of assigning a patient to the inferior treatment
+//   * failure_cost: the cost of assigning a patient to the inferior treatment
 //   * block_cost: the cost of running a block
 //
 // Important methods:
@@ -24,6 +24,7 @@
 #include "block_rar_table.h"
 #include "state_iterator.h"
 #include "action_iterator.h"
+#include "transition_dist.h"
 #include "test_statistic.h"
 #include <string>
 
@@ -33,25 +34,28 @@ class BlockRAROpt{
 	// Data
         int n_patients;
         int block_incr;
-	float error_cost;
+	float failure_cost;
 	float block_cost;
-        float prior_p;
-        float prior_strength;
 	
         BlockRARTable* results_table;
         StateIterator* state_iterator;
 	ActionIterator* action_iterator;
-        TestStatistic* test_statistic = NULL;
+        TransitionDist* transition_dist;
+        //TestStatistic* test_statistic = NULL;
+        TestStatistic* test_statistic; 
 
-	// Methods
+	// Private methods
 	StateResult terminal_reward(ContingencyTable ct);
 	StateResult max_expected_reward(int cur_idx, ContingencyTable ct);
 
     public:
 
         // Constructor
-	BlockRAROpt(int n_patients, int block_incr, float error_cost, float block_cost, 
-                    float pr_p=0.5, float pr_s=1e-6, std::string ts="wald");
+	BlockRAROpt(int n_patients, int block_incr, float failure_cost, float block_cost,
+                    float prior_a0, float prior_a1,
+                    float prior_b0, float prior_b1, 
+                    std::string transition_dist="binom",
+                    std::string ts="wald");
 
 	void solve();
 

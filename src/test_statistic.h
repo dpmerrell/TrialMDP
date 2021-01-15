@@ -11,17 +11,22 @@
 
 #include <cmath>
 #include <limits>
-
+#include <string>
 
 /**
  * Abstract base class.
- * Just defines an interface.
+ * Just defines an interface and a factory method.
  */ 
 class TestStatistic {
     public:
+
       TestStatistic(){ return; }
+
+      static TestStatistic* make_test_statistic(std::string name);
+
       virtual float operator()(float p_a, float p_b, float P, float N_a, float N_b, float N) = 0;
 };
+
 
 
 /**
@@ -51,11 +56,12 @@ class WaldStatistic : public TestStatistic {
           // that allows us to talk more naturally about tradeoffs between
           // statistical power and other terms of the objective--
           // some monotone transformation of W.
-          // (e.g., an exceedence probability?)
+          // E.g., the p-value?
           return W;   
       }
 
 };
+
 
 #endif
 

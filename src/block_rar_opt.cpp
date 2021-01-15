@@ -7,6 +7,7 @@
 #include "block_rar_table.h"
 #include "state_result.h"
 #include "transition_iterator.h"
+#include "transition_dist.h"
 #include "state_iterator.h"
 #include "test_statistic.h"
 #include <iostream>
@@ -54,7 +55,7 @@ StateResult BlockRAROpt::terminal_reward(ContingencyTable ct){
 
     // Compute the linear combination of those
     // factors
-    float rwd = power - error_cost*err; // - block_cost*remaining_blocks;
+    float rwd = power - failure_cost*err; // - block_cost*remaining_blocks;
                                         // ^^^This is zero for terminal states
     
     StateResult result = StateResult {0, 0, power, err, 0.0, rwd};
@@ -93,17 +94,18 @@ StateResult BlockRAROpt::max_expected_reward(int cur_idx, ContingencyTable ct){
 	// Compute the expected reward for this action,
 	// w.r.t. the randomness of the transition
 	TransitionIterator tr_it = TransitionIterator(ct, action_iterator->action_a(),
-			                                  action_iterator->action_b(),
-                                                          prior_p, prior_strength);
-	while(tr_it.not_finished()){
+			                                  action_iterator->action_b());
+	transition_dist->set_state_action(ct, action_iterator->action_a(),
+                                              action_iterator->action_b());
+        while(tr_it.not_finished()){
 
 	    // Get the result struct associated with this state
             StateResult tr_res = (*results_table)(result_size_idx, tr_it.value());
 
 	    // Get the probability of this transition
 	    // and update the expected values:
-	    prob = tr_it.prob();
-
+	    prob = transition_dist->prob(tr_it.get_a_counter(),
+                                         tr_it.get_b_counter());
             exp_power += (prob * tr_res.statistical_power);
 	    exp_err += (prob * tr_res.n_failures);
 	    exp_blocks += prob * tr_res.remaining_blocks;
@@ -135,27 +137,28 @@ StateResult BlockRAROpt::max_expected_reward(int cur_idx, ContingencyTable ct){
 
 
 // Constructor
-BlockRAROpt::BlockRAROpt(int n_p, int b_i, float e_c, float b_c, float pr_p, float pr_s, std::string ts){
+BlockRAROpt::BlockRAROpt(int n_p, int b_i, float f_c, float b_c, 
+                         float prior_a0, float prior_a1,
+                         float prior_b0, float prior_b1,
+                         std::string tr_dist,
+                         std::string test_stat){
 
     n_patients = n_p;
     block_incr = b_i;
-    error_cost = e_c;
+    failure_cost = f_c;
     block_cost = b_c;
-    prior_p = pr_p;
-    prior_strength = pr_s;
 
-    if (ts == "wald"){
-      test_statistic = new WaldStatistic();
-    }else{
-      std::cerr << ts << " not a valid value for test statistic." << std::endl;
-      throw(1);
-    }
 
     results_table = new BlockRARTable(n_p, b_i); 
     state_iterator = new StateIterator(*(results_table)); 
     action_iterator = new ActionIterator(0.2, 0.8, 7, 
 		                         results_table->get_n_vec(),
                                          0);
+    transition_dist = TransitionDist::make_transition_dist(tr_dist,
+                                                           prior_a0, prior_a1,
+                                                           prior_b0, prior_b1);
+    test_statistic = TestStatistic::make_test_statistic(test_stat);
+
 }
 
 
@@ -167,6 +170,7 @@ void BlockRAROpt::solve(){
     int cur_idx = terminal_idx;
     ContingencyTable cur_table; 
     cur_table = state_iterator->value();
+
 
     while(cur_idx == terminal_idx){
 	
@@ -310,4 +314,5 @@ BlockRAROpt::~BlockRAROpt(){
     delete action_iterator;
     delete results_table;
     delete test_statistic;
+    delete transition_dist;
 }
