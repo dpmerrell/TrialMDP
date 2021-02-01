@@ -18,7 +18,7 @@ struct StateResult{
     int next_a_allocation;
 
     // terms of the reward function
-    float statistical_power;
+    float terminal_reward;
     float n_failures;
     float remaining_blocks;
 
@@ -28,7 +28,7 @@ struct StateResult{
     void pretty_print(){
         std::cout << next_block_size << ", "
 		  << next_a_allocation << ", "
-		  << statistical_power << ", "
+		  << terminal_reward << ", "
 		  << n_failures << ", "
 		  << remaining_blocks << ", "
 		  << reward << std::endl;

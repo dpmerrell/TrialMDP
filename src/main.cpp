@@ -60,7 +60,7 @@ int main(int argc, char* argv[]){
                                          1.0, 1.0,
                                          1.0, 1.0,
                                          "binom",
-                                         "wald");
+                                         "wald_failure");
 	std::cout << "Initialized solver; about to solve" << std::endl;
 
 	solver.solve();

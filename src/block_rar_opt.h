@@ -25,7 +25,8 @@
 #include "state_iterator.h"
 #include "action_iterator.h"
 #include "transition_dist.h"
-#include "test_statistic.h"
+#include "terminal_reward.h"
+#include "transition_reward.h"
 #include <string>
 
 class BlockRAROpt{
@@ -41,11 +42,10 @@ class BlockRAROpt{
         StateIterator* state_iterator;
 	ActionIterator* action_iterator;
         TransitionDist* transition_dist;
-        //TestStatistic* test_statistic = NULL;
-        TestStatistic* test_statistic; 
+        TerminalReward* terminal_reward; 
+        TransitionReward* transition_reward;
 
 	// Private methods
-	StateResult terminal_reward(ContingencyTable ct);
 	StateResult max_expected_reward(int cur_idx, ContingencyTable ct);
 
     public:
@@ -54,8 +54,9 @@ class BlockRAROpt{
 	BlockRAROpt(int n_patients, int block_incr, float failure_cost, float block_cost,
                     float prior_a0, float prior_a1,
                     float prior_b0, float prior_b1, 
-                    std::string transition_dist="binom",
-                    std::string ts="wald");
+                    std::string transition_dist="beta_binom",
+                    std::string transition_rwd="block_cost",
+                    std::string terminal_rwd="wald_failure");
 
 	void solve();
 

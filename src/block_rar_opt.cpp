@@ -9,7 +9,7 @@
 #include "transition_iterator.h"
 #include "transition_dist.h"
 #include "state_iterator.h"
-#include "test_statistic.h"
+#include "terminal_reward.h"
 #include <iostream>
 #include <cstring>
 #include <string>
@@ -17,51 +17,6 @@
 #include <cmath>
 #include <limits>
 
-
-/**
- * The reward assigned to terminal states
- */
-StateResult BlockRAROpt::terminal_reward(ContingencyTable ct){
-    
-    // some useful row sums:
-    float N_a = ct.a0 + ct.a1;
-    float N_b = ct.b0 + ct.b1;
-    float N = N_a + N_b;
-    float p_a = 0.5;
-    if (N_a != 0.0){
-        p_a = float(ct.a1) / N_a;
-    } 
-    float p_b = 0.5;
-    if (N_b != 0.0){
-        p_b = float(ct.b1) / N_b;
-    }
-    float P = 0.5;
-    if (N != 0.0){
-        P = float(ct.a1 + ct.b1) / N;
-    }
-
-    // Compute statistical power
-    float power = (*test_statistic)(p_a, p_b, P, N_a, N_b, N);
-
-    // Compute the "failures": the expected number of patients
-    // that would have received a positive outcome, had they 
-    // been given the superior treatment.
-    float err;
-    if(p_a >= p_b){
-        err = (p_a - p_b)*N_b;
-    } else{
-        err = (p_b - p_a)*N_a;
-    }
-
-    // Compute the linear combination of those
-    // factors
-    float rwd = power - failure_cost*err; // - block_cost*remaining_blocks;
-                                        // ^^^This is zero for terminal states
-    
-    StateResult result = StateResult {0, 0, power, err, 0.0, rwd};
-
-    return result;
-}
 
 
 /**
@@ -93,36 +48,39 @@ StateResult BlockRAROpt::max_expected_reward(int cur_idx, ContingencyTable ct){
 
 	// Compute the expected reward for this action,
 	// w.r.t. the randomness of the transition
-	TransitionIterator tr_it = TransitionIterator(ct, action_iterator->action_a(),
-			                                  action_iterator->action_b());
-	transition_dist->set_state_action(ct, action_iterator->action_a(),
-                                              action_iterator->action_b());
+        int a_A = action_iterator->action_a();
+        int a_B = action_iterator->action_b();
+
+	TransitionIterator tr_it = TransitionIterator(ct, a_A, a_B);
+	transition_dist->set_state_action(ct, a_A, a_B);
         while(tr_it.not_finished()){
+            
+            int n_A = tr_it.get_a_counter();
+            int n_B = tr_it.get_b_counter();
 
 	    // Get the result struct associated with this state
             StateResult tr_res = (*results_table)(result_size_idx, tr_it.value());
 
 	    // Get the probability of this transition
 	    // and update the expected values:
-	    prob = transition_dist->prob(tr_it.get_a_counter(),
-                                         tr_it.get_b_counter());
-            exp_power += (prob * tr_res.statistical_power);
+	    prob = transition_dist->prob(n_A, n_B);
+            exp_power += (prob * tr_res.terminal_reward);
 	    exp_err += (prob * tr_res.n_failures);
 	    exp_blocks += prob * tr_res.remaining_blocks;
-	    exp_reward += prob * tr_res.reward;
+
+	    exp_reward += prob * ((*transition_reward)(a_A, a_B, n_A, n_B) + tr_res.reward);
 
             tr_it.advance();
         }
 
-	// Account for the cost of this block:
+	// Account for this block:
 	exp_blocks += 1.0;
-	exp_reward -= block_cost;
 
 	// Compare expected reward vs. best_choice
 	if (exp_reward > best_choice.reward){
             best_choice.next_block_size = action_iterator->get_block_size();
 	    best_choice.next_a_allocation = action_iterator->action_a();
-	    best_choice.statistical_power = exp_power;
+	    best_choice.terminal_reward = exp_power;
 	    best_choice.n_failures = exp_err;
 	    best_choice.remaining_blocks = exp_blocks;
 	    best_choice.reward = exp_reward; 
@@ -141,11 +99,11 @@ BlockRAROpt::BlockRAROpt(int n_p, int b_i, float f_c, float b_c,
                          float prior_a0, float prior_a1,
                          float prior_b0, float prior_b1,
                          std::string tr_dist,
-                         std::string test_stat){
+                         std::string transition_rwd,
+                         std::string terminal_rwd){
 
     n_patients = n_p;
     block_incr = b_i;
-    failure_cost = f_c;
     block_cost = b_c;
 
 
@@ -154,10 +112,14 @@ BlockRAROpt::BlockRAROpt(int n_p, int b_i, float f_c, float b_c,
     action_iterator = new ActionIterator(0.2, 0.8, 7, 
 		                         results_table->get_n_vec(),
                                          0);
+
     transition_dist = TransitionDist::make_transition_dist(tr_dist,
                                                            prior_a0, prior_a1,
                                                            prior_b0, prior_b1);
-    test_statistic = TestStatistic::make_test_statistic(test_stat);
+
+    transition_reward = TransitionReward::make_transition_reward(transition_rwd, b_c, n_p);
+
+    terminal_reward = TerminalReward::make_terminal_reward(terminal_rwd, f_c);
 
 }
 
@@ -174,7 +136,7 @@ void BlockRAROpt::solve(){
 
     while(cur_idx == terminal_idx){
 	
-	(*results_table)(terminal_idx, cur_table) = terminal_reward(cur_table);
+	(*results_table)(terminal_idx, cur_table) = (*terminal_reward)(cur_table);
 	
 	state_iterator->advance();
 	cur_idx = state_iterator->get_cur_idx();
@@ -200,7 +162,7 @@ void BlockRAROpt::solve(){
     std::cout << "\t\tN_B: " << first_move.next_block_size - first_move.next_a_allocation << std::endl;
 
     std::cout << "\nEXPECTED REWARD:" << std::endl;
-    std::cout << "\tWald statistic: " << first_move.statistical_power << std::endl; 
+    std::cout << "\tTerminal reward: " << first_move.terminal_reward << std::endl; 
     std::cout << "\tFailures: " << first_move.n_failures << std::endl; 
     std::cout << "\tNumber of blocks: " << first_move.remaining_blocks << std::endl;
     std::cout << "\n\tTotal: " << first_move.reward << std::endl;
@@ -234,7 +196,7 @@ void BlockRAROpt::to_sqlite(char* db_fname, int chunk_size=10000){
 	std::string build_expr = "CREATE TABLE RESULTS("\
             	              	"A0 INT, A1 INT, B0 INT, B1 INT, "\
 				"BlockSize INT, AAllocation INT, "\
-				"TestStatistic REAL, Failures REAL, RemainingBlocks REAL, Reward REAL, "\
+				"TerminalReward REAL, Failures REAL, RemainingBlocks REAL, Reward REAL, "\
             	               	"PRIMARY KEY (A0, A1, B0, B1)"\
             	               	");";
         int build_result = 1;
@@ -269,7 +231,7 @@ void BlockRAROpt::to_sqlite(char* db_fname, int chunk_size=10000){
 		insert_expr += std::to_string(cur_table.b1) + ", "; 
 		insert_expr += std::to_string(cur_results.next_block_size) + ", "; 
 		insert_expr += std::to_string(cur_results.next_a_allocation) + ", "; 
-		insert_expr += fl_to_str(cur_results.statistical_power) + ", "; 
+		insert_expr += fl_to_str(cur_results.terminal_reward) + ", "; 
 		insert_expr += std::to_string(cur_results.n_failures) + ", "; 
 		insert_expr += std::to_string(cur_results.remaining_blocks) + ", "; 
 		insert_expr += fl_to_str(cur_results.reward) + ");\n"; 
@@ -313,6 +275,6 @@ BlockRAROpt::~BlockRAROpt(){
     delete state_iterator;
     delete action_iterator;
     delete results_table;
-    delete test_statistic;
+    delete terminal_reward;
     delete transition_dist;
 }
