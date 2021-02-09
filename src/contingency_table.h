@@ -21,12 +21,14 @@ struct ContingencyTable {
 	b0 = 0;
 	b1 = 0;
     }
+
     ContingencyTable(int other_a0, int other_a1, int other_b0, int other_b1){
         a0 = other_a0;
 	a1 = other_a1;
 	b0 = other_b0;
 	b1 = other_b1;
     }
+
     ContingencyTable(const ContingencyTable& other){
         a0 = other.a0;
 	a1 = other.a1;
@@ -57,12 +59,14 @@ struct ContingencyTable {
 
 struct CTHash {
 
-    std::size_t operator()(const ContingencyTable& t) const {
-	return std::hash<std::string>{}(std::to_string(t.a0) 
-			              + std::to_string(t.a1)
-			              + std::to_string(t.b0)
-			              + std::to_string(t.b1));
+    int N = 1000;
+    int N2 = 1000000;
+    int N3 = 1000000000;
+
+    std::size_t operator()(const ContingencyTable& t) const{
+        return t.a0*N3 + t.a1*N2 + t.b0*N + t.b0;
     }
+
 };
 
 #endif
