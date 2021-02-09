@@ -69,16 +69,12 @@ StateResult BlockRAROpt::max_expected_reward(int cur_idx, ContingencyTable ct){
 	    // and update the expected values:
 	    prob = transition_dist->prob(n_A, n_B);
             for(unsigned int i=0; i < result_size; ++i){
-                expected_values.values[i] += (prob * tr_res.values[i]);
+                expected_values.values[i] += (prob * result_interpreter.look_ahead(tr_res, i));
             } 
 
             tr_it.advance();
         }
 
-	// Account for this block:
-        // TODO: remove this hardcoded index (implement TransitionRule)
-	expected_values.values[3] += 1.0;
-        expected_values.values[0] -= block_cost;
 
 	// Compare expected reward vs. best_choice
 	if (expected_values.values[0] > best_choice.values[0]){
@@ -111,7 +107,7 @@ BlockRAROpt::BlockRAROpt(int n_p, int b_i, float f_c, float b_c,
     block_incr = b_i;
     block_cost = b_c;
 
-    result_interpreter = ResultInterpreter(terminal_rule_name, transition_rwd);
+    result_interpreter = ResultInterpreter(terminal_rule_name, transition_rwd, block_cost);
 
     result_size = result_interpreter.get_n_attr();
 
@@ -153,7 +149,7 @@ void BlockRAROpt::solve(){
 	cur_table = state_iterator->value();
 
     }
- 
+    
     // Move on to the earlier states. 
     // compute the maximal action for each one.
     while(state_iterator->not_finished()){

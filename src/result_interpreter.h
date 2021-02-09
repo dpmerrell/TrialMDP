@@ -14,6 +14,7 @@
 #define __RESULT_INTERP_H_
 
 #include "contingency_table.h"
+#include "lookahead_rule.h"
 #include "state_result.h"
 #include <vector>
 #include <string>
@@ -22,10 +23,13 @@
 class ResultInterpreter{
 
     private:
+        
         int n_attr;
         std::vector< std::string > attr_names;
         std::unordered_map<std::string, int> attr_to_idx;
-
+        std::vector< LookaheadRule* > lookaheads;
+        
+        // Private method (initializes attr_to_idx) 
         std::unordered_map<std::string, int> make_dict(std::vector< std::string > names);
 
     public:
@@ -34,11 +38,18 @@ class ResultInterpreter{
             n_attr = 0;
             attr_names = std::vector< std::string >();
             attr_to_idx = std::unordered_map< std::string, int>();
+            lookaheads = std::vector< LookaheadRule* >();
         }
 
         ResultInterpreter(std::string terminal_rule,
-                          std::string transition_reward);
+                          std::string transition_reward,
+                          float block_cost);
 
+        //~ResultInterpreter(){
+        //    for(unsigned int i=0; i < lookaheads.size(); ++i){
+        //        delete lookaheads[i];
+        //    }
+        //}
 
         float get_attr(StateResult& res, std::string attr_name); 
         void set_attr(StateResult& res, std::string attr_name, float new_value); 
@@ -52,6 +63,8 @@ class ResultInterpreter{
         // Functions for saving results to a SQLite database
         std::string sql_create_table();
         std::string sql_insert_tuple(StateResult& res, ContingencyTable& ct);
+
+        float look_ahead(StateResult& next, int idx);
 
 };
 

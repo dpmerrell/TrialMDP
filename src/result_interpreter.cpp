@@ -1,34 +1,48 @@
 
 #include "result_interpreter.h"
 #include "contingency_table.h"
+#include "lookahead_rule.h"
 #include "state_result.h"
 #include <cmath>
 #include <string>
 #include <vector>
-
+#include <iostream>
 
 ResultInterpreter::ResultInterpreter(std::string terminal_rule,
-                                     std::string transition_reward){
+                                     std::string transition_reward,
+                                     float block_cost){
     
     attr_names = std::vector<std::string>();
+    int idx = 0;
 
     // We'll store these values regardless of the
     // problem formulation.
     attr_names.push_back("TotalReward");
+    AddConstLR* rwd_lr = new AddConstLR(idx, -1.0*block_cost);
+    lookaheads.push_back(rwd_lr);
+    idx++;
 
     attr_names.push_back("ExcessFailures");
+    IdentityLR* xf_lr = new IdentityLR(idx);
+    lookaheads.push_back(xf_lr);
+    idx++;
 
     if(terminal_rule == "wald_failure"){
         attr_names.push_back("WaldStatistic");
+        IdentityLR* waldstat_lr = new IdentityLR(idx);
+        lookaheads.push_back(waldstat_lr);
+        idx++;
     }
     if(transition_reward == "block_cost"){
         attr_names.push_back("RemainingBlocks");
+        AddConstLR* rem_lr = new AddConstLR(idx, 1.0);
+        lookaheads.push_back(rem_lr);
+        idx++;
     }
 
     n_attr = attr_names.size();
 
     attr_to_idx = make_dict(attr_names);
-
 
     return;
 }
@@ -54,6 +68,11 @@ void ResultInterpreter::set_attr(StateResult& result, std::string attr_name, flo
 }
 
 
+float ResultInterpreter::look_ahead(StateResult& next, int idx){
+    return (*(lookaheads[idx]))(next);
+}
+
+
 std::string fl_to_str(float x){
 
     std::string s;
@@ -68,7 +87,6 @@ std::string fl_to_str(float x){
 
 std::string ResultInterpreter::pretty_print_result(StateResult& res){
 
-    //TODO propagate refactor here in this printout
     std::string print_str = "Action:\n"; 
     print_str += "\tBlock size: " + std::to_string(res.block_size) + "\n";
     print_str += "\tN_A: "+std::to_string(res.a_allocation)+"\n";
