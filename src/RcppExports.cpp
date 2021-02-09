@@ -6,8 +6,8 @@
 using namespace Rcpp;
 
 // block_rar_opt
-void block_rar_opt(int n_patients, int block_incr, float failure_cost, float block_cost, std::string sqlite_fname, float prior_a0, float prior_a1, float prior_b0, float prior_b1, std::string transition_dist, std::string transition_rwd, std::string terminal_reward);
-RcppExport SEXP _blockRARopt_block_rar_opt(SEXP n_patientsSEXP, SEXP block_incrSEXP, SEXP failure_costSEXP, SEXP block_costSEXP, SEXP sqlite_fnameSEXP, SEXP prior_a0SEXP, SEXP prior_a1SEXP, SEXP prior_b0SEXP, SEXP prior_b1SEXP, SEXP transition_distSEXP, SEXP transition_rwdSEXP, SEXP terminal_rewardSEXP) {
+void block_rar_opt(int n_patients, int block_incr, float failure_cost, float block_cost, std::string sqlite_fname, float prior_a0, float prior_a1, float prior_b0, float prior_b1, std::string transition_dist, std::string transition_rwd, std::string terminal_rule);
+RcppExport SEXP _blockRARopt_block_rar_opt(SEXP n_patientsSEXP, SEXP block_incrSEXP, SEXP failure_costSEXP, SEXP block_costSEXP, SEXP sqlite_fnameSEXP, SEXP prior_a0SEXP, SEXP prior_a1SEXP, SEXP prior_b0SEXP, SEXP prior_b1SEXP, SEXP transition_distSEXP, SEXP transition_rwdSEXP, SEXP terminal_ruleSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type n_patients(n_patientsSEXP);
@@ -21,8 +21,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< float >::type prior_b1(prior_b1SEXP);
     Rcpp::traits::input_parameter< std::string >::type transition_dist(transition_distSEXP);
     Rcpp::traits::input_parameter< std::string >::type transition_rwd(transition_rwdSEXP);
-    Rcpp::traits::input_parameter< std::string >::type terminal_reward(terminal_rewardSEXP);
-    block_rar_opt(n_patients, block_incr, failure_cost, block_cost, sqlite_fname, prior_a0, prior_a1, prior_b0, prior_b1, transition_dist, transition_rwd, terminal_reward);
+    Rcpp::traits::input_parameter< std::string >::type terminal_rule(terminal_ruleSEXP);
+    block_rar_opt(n_patients, block_incr, failure_cost, block_cost, sqlite_fname, prior_a0, prior_a1, prior_b0, prior_b1, transition_dist, transition_rwd, terminal_rule);
     return R_NilValue;
 END_RCPP
 }

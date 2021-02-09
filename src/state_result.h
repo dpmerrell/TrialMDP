@@ -14,25 +14,54 @@
 
 struct StateResult{
     // Optimal action
-    int next_block_size;
-    int next_a_allocation;
+    int block_size;
+    int a_allocation;
 
-    // terms of the reward function
-    float terminal_reward;
-    float n_failures;
-    float remaining_blocks;
+    // store all of the rewards/etc. that
+    // the algorithm needs
+    int n_values;
+    float* values; 
 
-    // combined reward value
-    float reward;
-
-    void pretty_print(){
-        std::cout << next_block_size << ", "
-		  << next_a_allocation << ", "
-		  << terminal_reward << ", "
-		  << n_failures << ", "
-		  << remaining_blocks << ", "
-		  << reward << std::endl;
+    StateResult(){
+        block_size = 0;
+        a_allocation = 0;
+        n_values = 0;
+        values = NULL;
     }
+
+    StateResult(int n_attributes){
+        block_size = 0;
+        a_allocation = 0;
+        n_values = n_attributes;
+        values = new float [n_attributes];
+    }   
+
+    StateResult& operator=(const StateResult& other){
+        block_size = other.block_size;
+        a_allocation = other.a_allocation;
+        n_values = other.n_values;
+        values = new float [n_values];
+        for(unsigned int i = 0; i < n_values; ++i){
+            values[i] = other.values[i];
+        }
+        return *this;
+    }    
+
+    StateResult(const StateResult& old){
+        block_size = old.block_size;
+        a_allocation = old.a_allocation;
+        n_values = old.n_values;
+        values = new float [n_values];
+        for(unsigned int i = 0; i < n_values; ++i){
+            values[i] = old.values[i];
+        }
+    }
+
+
+    ~StateResult(){
+        delete values;
+    }
+ 
 };
 
 

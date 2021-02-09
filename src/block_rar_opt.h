@@ -19,13 +19,14 @@
 #ifndef _BLOCK_RAR_OPT_H
 #define _BLOCK_RAR_OPT_H
 
+#include "result_interpreter.h"
 #include "contingency_table.h"
 #include "state_result.h"
 #include "block_rar_table.h"
 #include "state_iterator.h"
 #include "action_iterator.h"
 #include "transition_dist.h"
-#include "terminal_reward.h"
+#include "terminal_rule.h"
 #include "transition_reward.h"
 #include <string>
 
@@ -37,13 +38,17 @@ class BlockRAROpt{
         int block_incr;
 	float failure_cost;
 	float block_cost;
+
+        int result_size;
 	
         BlockRARTable* results_table;
         StateIterator* state_iterator;
 	ActionIterator* action_iterator;
         TransitionDist* transition_dist;
-        TerminalReward* terminal_reward; 
+        TerminalRule* terminal_rule; 
         TransitionReward* transition_reward;
+        
+        ResultInterpreter result_interpreter; 
 
 	// Private methods
 	StateResult max_expected_reward(int cur_idx, ContingencyTable ct);
@@ -56,7 +61,7 @@ class BlockRAROpt{
                     float prior_b0, float prior_b1, 
                     std::string transition_dist="beta_binom",
                     std::string transition_rwd="block_cost",
-                    std::string terminal_rwd="wald_failure");
+                    std::string trm_rule="wald_failure");
 
 	void solve();
 

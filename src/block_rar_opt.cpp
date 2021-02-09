@@ -9,7 +9,7 @@
 #include "transition_iterator.h"
 #include "transition_dist.h"
 #include "state_iterator.h"
-#include "terminal_reward.h"
+#include "terminal_rule.h"
 #include <iostream>
 #include <cstring>
 #include <string>
@@ -30,7 +30,12 @@ StateResult BlockRAROpt::max_expected_reward(int cur_idx, ContingencyTable ct){
     float FLOAT_NEG_INF = -std::numeric_limits<float>::infinity();
    
     // Track the best action we've seen thus far
-    StateResult best_choice = StateResult {-1,-1,-1.0,-1.0,-1.0, FLOAT_NEG_INF};
+    StateResult best_choice = StateResult(result_size); 
+    best_choice.values[0] = FLOAT_NEG_INF;
+
+    // Use this StateResult to represent the expected
+    // value of the current action
+    StateResult expected_values = StateResult(result_size);
 
     // Iterate through the possible actions
     action_iterator->reset(cur_idx);
@@ -40,11 +45,10 @@ StateResult BlockRAROpt::max_expected_reward(int cur_idx, ContingencyTable ct){
 	int result_size_idx = action_iterator->get_block_size_idx();
 
         float prob = 0.0;
-        // Initialize expected reward:
-	float exp_power = 0.0;
-	float exp_err = 0.0;
-	float exp_blocks = 0.0;
-	float exp_reward = 0.0;
+        // Initialize expected reward (and other values):
+        for (unsigned int i=0; i < result_size; ++i){
+            expected_values.values[i] = 0.0;
+        }
 
 	// Compute the expected reward for this action,
 	// w.r.t. the randomness of the transition
@@ -64,32 +68,33 @@ StateResult BlockRAROpt::max_expected_reward(int cur_idx, ContingencyTable ct){
 	    // Get the probability of this transition
 	    // and update the expected values:
 	    prob = transition_dist->prob(n_A, n_B);
-            exp_power += (prob * tr_res.terminal_reward);
-	    exp_err += (prob * tr_res.n_failures);
-	    exp_blocks += prob * tr_res.remaining_blocks;
-
-	    exp_reward += prob * ((*transition_reward)(a_A, a_B, n_A, n_B) + tr_res.reward);
+            for(unsigned int i=0; i < result_size; ++i){
+                expected_values.values[i] += (prob * tr_res.values[i]);
+            } 
 
             tr_it.advance();
         }
 
 	// Account for this block:
-	exp_blocks += 1.0;
+        // TODO: remove this hardcoded index (implement TransitionRule)
+	expected_values.values[3] += 1.0;
+        expected_values.values[0] -= block_cost;
 
 	// Compare expected reward vs. best_choice
-	if (exp_reward > best_choice.reward){
-            best_choice.next_block_size = action_iterator->get_block_size();
-	    best_choice.next_a_allocation = action_iterator->action_a();
-	    best_choice.terminal_reward = exp_power;
-	    best_choice.n_failures = exp_err;
-	    best_choice.remaining_blocks = exp_blocks;
-	    best_choice.reward = exp_reward; 
+	if (expected_values.values[0] > best_choice.values[0]){
+
+            best_choice.block_size = action_iterator->get_block_size();
+	    best_choice.a_allocation = action_iterator->action_a();
+
+            for(unsigned int i=0; i < result_size; ++i){
+                best_choice.values[i] = expected_values.values[i];
+            }
 	}
 
         action_iterator->advance();
     
     }
-    // Return the best action (and corresponding reward)
+    // Return the best action (and corresponding results)
     return best_choice;
 }
 
@@ -100,12 +105,15 @@ BlockRAROpt::BlockRAROpt(int n_p, int b_i, float f_c, float b_c,
                          float prior_b0, float prior_b1,
                          std::string tr_dist,
                          std::string transition_rwd,
-                         std::string terminal_rwd){
+                         std::string terminal_rule_name){
 
     n_patients = n_p;
     block_incr = b_i;
     block_cost = b_c;
 
+    result_interpreter = ResultInterpreter(terminal_rule_name, transition_rwd);
+
+    result_size = result_interpreter.get_n_attr();
 
     results_table = new BlockRARTable(n_p, b_i); 
     state_iterator = new StateIterator(*(results_table)); 
@@ -117,9 +125,11 @@ BlockRAROpt::BlockRAROpt(int n_p, int b_i, float f_c, float b_c,
                                                            prior_a0, prior_a1,
                                                            prior_b0, prior_b1);
 
-    transition_reward = TransitionReward::make_transition_reward(transition_rwd, b_c, n_p);
+    transition_reward = TransitionReward::make_transition_reward(transition_rwd, 
+                                                                 b_c, n_p);
 
-    terminal_reward = TerminalReward::make_terminal_reward(terminal_rwd, f_c);
+    terminal_rule = TerminalRule::make_terminal_rule(terminal_rule_name, f_c);
+
 
 }
 
@@ -136,7 +146,7 @@ void BlockRAROpt::solve(){
 
     while(cur_idx == terminal_idx){
 	
-	(*results_table)(terminal_idx, cur_table) = (*terminal_reward)(cur_table);
+	(*results_table)(terminal_idx, cur_table) = (*terminal_rule)(result_interpreter, cur_table);
 	
 	state_iterator->advance();
 	cur_idx = state_iterator->get_cur_idx();
@@ -154,32 +164,14 @@ void BlockRAROpt::solve(){
         state_iterator->advance();
 	cur_idx = state_iterator->get_cur_idx();
     }
-    std::cout << "FIRST MOVE:" << std::endl;
+
     StateResult first_move = (*results_table)(0, cur_table);
 
-    std::cout << "\tblock size: " << first_move.next_block_size << std::endl;
-    std::cout << "\t\tN_A: " << first_move.next_a_allocation << std::endl;
-    std::cout << "\t\tN_B: " << first_move.next_block_size - first_move.next_a_allocation << std::endl;
-
-    std::cout << "\nEXPECTED REWARD:" << std::endl;
-    std::cout << "\tTerminal reward: " << first_move.terminal_reward << std::endl; 
-    std::cout << "\tFailures: " << first_move.n_failures << std::endl; 
-    std::cout << "\tNumber of blocks: " << first_move.remaining_blocks << std::endl;
-    std::cout << "\n\tTotal: " << first_move.reward << std::endl;
+    std::cout << result_interpreter.pretty_print_result(first_move);
 
 }
 
 
-std::string fl_to_str(float x){
-
-    std::string s;
-    if (std::isfinite(x)){
-        s = std::to_string(x);
-    }else{
-        s = "NULL";
-    }
-    return s;
-}
 
 void BlockRAROpt::to_sqlite(char* db_fname, int chunk_size=10000){
 
@@ -192,21 +184,21 @@ void BlockRAROpt::to_sqlite(char* db_fname, int chunk_size=10000){
         conn_result = sqlite3_open(db_fname, &db);
         if(conn_result != 0){ throw 1; }
 
+      
+        // Drop the table if it already exists. 
+        std::string droptable_str = "DROP TABLE IF EXISTS RESULTS;";
+        int drop_result = 1;
+        drop_result = sqlite3_exec(db, droptable_str.c_str(), NULL, NULL, NULL);
+
         // Build table in database
-	std::string build_expr = "CREATE TABLE RESULTS("\
-            	              	"A0 INT, A1 INT, B0 INT, B1 INT, "\
-				"BlockSize INT, AAllocation INT, "\
-				"TerminalReward REAL, Failures REAL, RemainingBlocks REAL, Reward REAL, "\
-            	               	"PRIMARY KEY (A0, A1, B0, B1)"\
-            	               	");";
+	std::string build_expr = result_interpreter.sql_create_table();
         int build_result = 1;
         build_result = sqlite3_exec(db, build_expr.c_str(), NULL, NULL, NULL);
         if (build_result != 0){ throw 2; }
 
-	//
+	// Beginning and end of each chunk
 	std::string transaction_start = "BEGIN TRANSACTION;\n";
-	std::string line_start = "INSERT INTO RESULTS VALUES (";
-        std::string transaction_end = " COMMIT;";
+        std::string transaction_end = "COMMIT;";
 
 	// Iterate over the results
 	StateIterator result_iter = StateIterator(*(results_table));
@@ -222,21 +214,11 @@ void BlockRAROpt::to_sqlite(char* db_fname, int chunk_size=10000){
                 ContingencyTable cur_table = result_iter.value();
 	        int cur_idx = result_iter.get_cur_idx();
                 StateResult cur_results = (*results_table)(cur_idx, cur_table);
-	                
-	        // Add a line to the transaction
-		insert_expr += line_start;
-		insert_expr += std::to_string(cur_table.a0) + ", "; 
-		insert_expr += std::to_string(cur_table.a1) + ", "; 
-		insert_expr += std::to_string(cur_table.b0) + ", "; 
-		insert_expr += std::to_string(cur_table.b1) + ", "; 
-		insert_expr += std::to_string(cur_results.next_block_size) + ", "; 
-		insert_expr += std::to_string(cur_results.next_a_allocation) + ", "; 
-		insert_expr += fl_to_str(cur_results.terminal_reward) + ", "; 
-		insert_expr += std::to_string(cur_results.n_failures) + ", "; 
-		insert_expr += std::to_string(cur_results.remaining_blocks) + ", "; 
-		insert_expr += fl_to_str(cur_results.reward) + ");\n"; 
-
-		// Move to the next result
+	       
+                // add a line for this result to the SQL query         
+                insert_expr += result_interpreter.sql_insert_tuple(cur_results, cur_table);
+		
+                // Move to the next result
                 result_iter.advance();
 
 	    }
@@ -275,6 +257,6 @@ BlockRAROpt::~BlockRAROpt(){
     delete state_iterator;
     delete action_iterator;
     delete results_table;
-    delete terminal_reward;
+    delete terminal_rule;
     delete transition_dist;
 }
