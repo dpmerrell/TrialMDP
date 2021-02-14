@@ -4,7 +4,7 @@
 // Implementation of TransitionDist class
 // and its subclasses.
 
-#define __STDCPP_MATH_SPEC_FUNCS__ 201003L
+//#define __STDCPP_MATH_SPEC_FUNCS__ 201003L
 #define __STDCPP_WANT_MATH_SPEC_FUNCS__ 1
 
 #include "transition_dist.h"
