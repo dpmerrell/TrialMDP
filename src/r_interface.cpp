@@ -18,8 +18,7 @@ void block_rar_opt(int n_patients, int block_incr,
                    float prior_b0 = 1.0,
                    float prior_b1 = 1.0,
                    std::string transition_dist="beta_binom",
-                   std::string transition_rwd="block_cost", 
-                   std::string terminal_rule="wald_failure") {
+                   std::string test_statistic="wald") {
 
 
   std::cout << "About to initialize solver." << std::endl;
@@ -28,8 +27,7 @@ void block_rar_opt(int n_patients, int block_incr,
                                    prior_a0, prior_a1,
                                    prior_b0, prior_b1,
                                    transition_dist,
-                                   transition_rwd,
-                                   terminal_rule);
+                                   test_statistic);
   std::cout << "Solver initialized." << std::endl; 
   std::cout << "Solving." << std::endl;
   

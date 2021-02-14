@@ -7,11 +7,15 @@
 // Factory method
 ////////////////////////
 
-TerminalRule* TerminalRule::make_terminal_rule(std::string name, float failure_cost){
-    if (name == "wald_failure"){
+TerminalRule* TerminalRule::make_terminal_rule(std::string test_stat, float failure_cost){
+    if (test_stat == "wald"){
       return new WaldFailureTerminalRule(failure_cost);
-    }else{
-      std::cerr << name << " not a valid value for terminal reward." << std::endl;
+    }
+    else if (test_stat == "cmh"){
+      return new FailureTerminalRule(failure_cost);
+    }
+    else{
+      std::cerr << test_stat << " not a valid value for test statistic." << std::endl;
       throw(1);
     }
 }

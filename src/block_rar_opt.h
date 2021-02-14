@@ -27,7 +27,6 @@
 #include "action_iterator.h"
 #include "transition_dist.h"
 #include "terminal_rule.h"
-#include "transition_reward.h"
 #include <string>
 
 class BlockRAROpt{
@@ -39,14 +38,13 @@ class BlockRAROpt{
 	float failure_cost;
 	float block_cost;
 
-        int result_size;
+        int n_attr;
 	
         BlockRARTable* results_table;
         StateIterator* state_iterator;
 	ActionIterator* action_iterator;
         TransitionDist* transition_dist;
         TerminalRule* terminal_rule; 
-        TransitionReward* transition_reward;
         
         ResultInterpreter result_interpreter; 
 
@@ -60,8 +58,7 @@ class BlockRAROpt{
                     float prior_a0, float prior_a1,
                     float prior_b0, float prior_b1, 
                     std::string transition_dist="beta_binom",
-                    std::string transition_rwd="block_cost",
-                    std::string trm_rule="wald_failure");
+                    std::string test_statistic="wald");
 
 	void solve();
 

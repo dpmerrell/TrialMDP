@@ -28,14 +28,15 @@
 StateResult BlockRAROpt::max_expected_reward(int cur_idx, ContingencyTable ct){
 
     float FLOAT_NEG_INF = -std::numeric_limits<float>::infinity();
-   
+    int rwd_idx = n_attr - 1;
+ 
     // Track the best action we've seen thus far
-    StateResult best_choice = StateResult(result_size); 
-    best_choice.values[0] = FLOAT_NEG_INF;
+    StateResult best_choice = StateResult(n_attr); 
+    best_choice.values[rwd_idx] = FLOAT_NEG_INF;
 
     // Use this StateResult to represent the expected
     // value of the current action
-    StateResult expected_values = StateResult(result_size);
+    StateResult expected_values = StateResult(n_attr);
 
     // Iterate through the possible actions
     action_iterator->reset(cur_idx);
@@ -46,7 +47,7 @@ StateResult BlockRAROpt::max_expected_reward(int cur_idx, ContingencyTable ct){
 
         float prob = 0.0;
         // Initialize expected reward (and other values):
-        for (unsigned int i=0; i < result_size; ++i){
+        for (unsigned int i=0; i < n_attr; ++i){
             expected_values.values[i] = 0.0;
         }
 
@@ -68,21 +69,23 @@ StateResult BlockRAROpt::max_expected_reward(int cur_idx, ContingencyTable ct){
 	    // Get the probability of this transition
 	    // and update the expected values:
 	    prob = transition_dist->prob(n_A, n_B);
-            for(unsigned int i=0; i < result_size; ++i){
-                expected_values.values[i] += (prob * result_interpreter.look_ahead(tr_res, i));
+            result_interpreter.compute_lookaheads(a_A, a_B, n_A, n_B, tr_res);
+            for(unsigned int i=0; i < n_attr; ++i){
+                expected_values.values[i] += (prob * result_interpreter.look_ahead(i));
             } 
+            result_interpreter.clear_lookaheads();
 
             tr_it.advance();
         }
 
 
 	// Compare expected reward vs. best_choice
-	if (expected_values.values[0] > best_choice.values[0]){
+	if (expected_values.values[rwd_idx] > best_choice.values[rwd_idx]){
 
             best_choice.block_size = action_iterator->get_block_size();
 	    best_choice.a_allocation = action_iterator->action_a();
 
-            for(unsigned int i=0; i < result_size; ++i){
+            for(unsigned int i=0; i < n_attr; ++i){
                 best_choice.values[i] = expected_values.values[i];
             }
 	}
@@ -100,16 +103,16 @@ BlockRAROpt::BlockRAROpt(int n_p, int b_i, float f_c, float b_c,
                          float prior_a0, float prior_a1,
                          float prior_b0, float prior_b1,
                          std::string tr_dist,
-                         std::string transition_rwd,
-                         std::string terminal_rule_name){
+                         std::string test_statistic){
 
     n_patients = n_p;
     block_incr = b_i;
     block_cost = b_c;
+    failure_cost = f_c;
 
-    result_interpreter = ResultInterpreter(terminal_rule_name, transition_rwd, block_cost);
+    result_interpreter = ResultInterpreter(test_statistic, failure_cost, block_cost);
 
-    result_size = result_interpreter.get_n_attr();
+    n_attr = result_interpreter.get_n_attr();
 
     results_table = new BlockRARTable(n_p, b_i); 
     state_iterator = new StateIterator(*(results_table)); 
@@ -121,10 +124,7 @@ BlockRAROpt::BlockRAROpt(int n_p, int b_i, float f_c, float b_c,
                                                            prior_a0, prior_a1,
                                                            prior_b0, prior_b1);
 
-    transition_reward = TransitionReward::make_transition_reward(transition_rwd, 
-                                                                 b_c, n_p);
-
-    terminal_rule = TerminalRule::make_terminal_rule(terminal_rule_name, f_c);
+    terminal_rule = TerminalRule::make_terminal_rule(test_statistic, failure_cost);
 
 
 }

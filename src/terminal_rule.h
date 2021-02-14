@@ -6,8 +6,8 @@
 // the optimizer at terminal states, making it easy for 
 // us to solve different problems in the future.
 
-#ifndef _DPM_TERMINAL_REWARD_H
-#define _DPM_TERMINAL_REWARD_H
+#ifndef _DPM_TERMINAL_RULE_H
+#define _DPM_TERMINAL_RULE_H
 
 #include "result_interpreter.h"
 #include "contingency_table.h"
@@ -109,6 +109,56 @@ class WaldFailureTerminalRule : public TerminalRule {
           interp.set_attr(result, "WaldStatistic", W);
           interp.set_attr(result, "ExcessFailures",  failures);
           interp.set_attr(result, "RemainingBlocks", 0.0);
+
+          return result;
+      }
+
+};
+
+
+class FailureTerminalRule : public TerminalRule {
+
+    private:
+      float failure_cost;
+
+    public:
+
+      FailureTerminalRule(float f_c){ 
+        failure_cost = f_c;
+        return; 
+      }
+
+      StateResult operator()(ResultInterpreter interp, ContingencyTable ct){
+    
+          // some useful row sums:
+          float N_a = ct.a0 + ct.a1;
+          float N_b = ct.b0 + ct.b1;
+          float p_a = 0.5;
+          if (N_a != 0.0){
+              p_a = float(ct.a1) / N_a;
+          } 
+          float p_b = 0.5;
+          if (N_b != 0.0){
+              p_b = float(ct.b1) / N_b;
+          }
+          
+          float failures;
+          if(p_a >= p_b){
+              failures = (p_a - p_b)*N_b;
+          } else{
+              failures = (p_b - p_a)*N_a;
+          }
+
+          // Compute the linear combination of those
+          // factors
+          float rwd = -failure_cost*failures; 
+          
+          StateResult result = StateResult(interp.get_n_attr());
+          for(unsigned int i=0; i < interp.get_n_attr(); ++i){
+              result.values[i] = 0.0;
+          }
+          interp.set_attr(result, "ExcessFailures",  failures);
+          interp.set_attr(result, "TotalReward", rwd);
 
           return result;
       }

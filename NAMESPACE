@@ -1,3 +1,4 @@
 useDynLib(blockRARopt, .registration=TRUE)
 exportPattern("^[[:alpha:]]+")
 importFrom(Rcpp, evalCpp)
+import(RSQLite)

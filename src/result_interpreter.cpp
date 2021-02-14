@@ -8,41 +8,61 @@
 #include <vector>
 #include <iostream>
 
-ResultInterpreter::ResultInterpreter(std::string terminal_rule,
-                                     std::string transition_reward,
+ResultInterpreter::ResultInterpreter(std::string test_statistic,
+                                     float failure_cost,
                                      float block_cost){
     
     attr_names = std::vector<std::string>();
     int idx = 0;
 
-    // We'll store these values regardless of the
-    // problem formulation.
-    attr_names.push_back("TotalReward");
-    AddConstLR* rwd_lr = new AddConstLR(idx, -1.0*block_cost);
-    lookaheads.push_back(rwd_lr);
-    idx++;
-
+    // We'll store the excess failures and
+    // remaining blocks, regardless of 
     attr_names.push_back("ExcessFailures");
-    IdentityLR* xf_lr = new IdentityLR(idx);
-    lookaheads.push_back(xf_lr);
+    IdentityLR* xf_lr = new IdentityLR();
+    lookahead_rules.push_back(xf_lr);
+    int fail_idx = idx;
     idx++;
 
-    if(terminal_rule == "wald_failure"){
+    attr_names.push_back("RemainingBlocks");
+    AddConstLR* rem_lr = new AddConstLR(1.0);
+    lookahead_rules.push_back(rem_lr);
+    int block_idx = idx;
+    idx++;
+
+    int stat_idx = -1; 
+    if(test_statistic == "wald"){
         attr_names.push_back("WaldStatistic");
-        IdentityLR* waldstat_lr = new IdentityLR(idx);
-        lookaheads.push_back(waldstat_lr);
+        IdentityLR* waldstat_lr = new IdentityLR();
+        lookahead_rules.push_back(waldstat_lr);
+        stat_idx = idx; 
+        idx++;
+    }else if(test_statistic == "cmh"){
+        attr_names.push_back("CMH_numerator_sqrt");
+        CMHStatisticLR* cmhstat_lr = new CMHStatisticLR(idx+2, idx, idx+1);
+        lookahead_rules.push_back(cmhstat_lr);
+        idx++;
+        
+        attr_names.push_back("CMH_denominator");
+        lookahead_rules.push_back(cmhstat_lr);
+        idx++;
+
+        attr_names.push_back("CMHStatistic");
+        lookahead_rules.push_back(cmhstat_lr);
+        stat_idx = idx; 
         idx++;
     }
-    if(transition_reward == "block_cost"){
-        attr_names.push_back("RemainingBlocks");
-        AddConstLR* rem_lr = new AddConstLR(idx, 1.0);
-        lookaheads.push_back(rem_lr);
-        idx++;
-    }
+
+    attr_names.push_back("TotalReward");
+    LinCombLR* rwd_lr = new LinCombLR(stat_idx, fail_idx, block_idx,
+                                       1.0, -failure_cost,-block_cost);
+    lookahead_rules.push_back(rwd_lr);
+    idx++;
+
 
     n_attr = attr_names.size();
-
     attr_to_idx = make_dict(attr_names);
+    lookahead_values = std::vector<float>(n_attr);
+    clear_lookaheads();
 
     return;
 }
@@ -68,10 +88,24 @@ void ResultInterpreter::set_attr(StateResult& result, std::string attr_name, flo
 }
 
 
-float ResultInterpreter::look_ahead(StateResult& next, int idx){
-    return (*(lookaheads[idx]))(next);
+float ResultInterpreter::look_ahead(int idx){
+    return lookahead_values[idx];
 }
 
+void ResultInterpreter::compute_lookaheads(int a_A, int a_B, int n_A, int n_B,
+                                            StateResult& next){
+    for(unsigned int i=0; i < lookahead_rules.size(); ++i){
+        (*(lookahead_rules[i]))(lookahead_values, a_A, a_B, n_A, n_B, next, i); 
+    }
+}
+
+
+void ResultInterpreter::clear_lookaheads(){
+    for(unsigned int i=0; i < lookahead_rules.size(); ++i){
+        lookahead_values[i] = 0.0;
+    }
+}
+    
 
 std::string fl_to_str(float x){
 
