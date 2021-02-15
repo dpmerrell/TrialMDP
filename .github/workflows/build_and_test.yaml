@@ -16,7 +16,7 @@ jobs:
               with:
                   r-version: '3.6.3'
             - run: Rscript .github/helpers/install_deps.R 
-            - run: R CMD INSTALL .
+            - run: Rscript .github/helpers/install_pkg.R
             - run: Rscript tests/test_script.R
  
     #run_script:
