@@ -8,6 +8,7 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
+// [[Rcpp::depends(BH)]]
 
 // [[Rcpp::export]]
 void block_rar_opt(int n_patients, int block_incr,
