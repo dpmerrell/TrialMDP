@@ -15,7 +15,7 @@ jobs:
             - uses: r-lib/actions/setup-r@v1
               with:
                   r-version: '3.6.3'
-            - run: Rscript -e 'install.packages("Rcpp"); install.packages("RSQLite")'
+            - run: Rscript .github/helpers/install_deps.R 
             - run: R CMD INSTALL .
             - run: Rscript tests/test_script.R
  
