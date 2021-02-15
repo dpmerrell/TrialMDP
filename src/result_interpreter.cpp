@@ -37,18 +37,19 @@ ResultInterpreter::ResultInterpreter(std::string test_statistic,
         stat_idx = idx; 
         idx++;
     }else if(test_statistic == "cmh"){
+
+        attr_names.push_back("CMHStatistic");
+        CMHStatisticLR* cmhstat_lr = new CMHStatisticLR(idx, idx+1, idx+2);
+        lookahead_rules.push_back(cmhstat_lr);
+        stat_idx = idx; 
+        idx++;
+
         attr_names.push_back("CMH_numerator_sqrt");
-        CMHStatisticLR* cmhstat_lr = new CMHStatisticLR(idx+2, idx, idx+1);
         lookahead_rules.push_back(cmhstat_lr);
         idx++;
         
         attr_names.push_back("CMH_denominator");
         lookahead_rules.push_back(cmhstat_lr);
-        idx++;
-
-        attr_names.push_back("CMHStatistic");
-        lookahead_rules.push_back(cmhstat_lr);
-        stat_idx = idx; 
         idx++;
     }
 

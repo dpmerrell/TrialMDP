@@ -22,14 +22,19 @@ void block_rar_opt(int n_patients, int block_incr,
                    std::string test_statistic="wald") {
 
 
-  std::cout << "About to initialize solver." << std::endl;
   BlockRAROpt solver = BlockRAROpt(n_patients, block_incr,
                                    failure_cost, block_cost,
                                    prior_a0, prior_a1,
                                    prior_b0, prior_b1,
                                    transition_dist,
                                    test_statistic);
-  std::cout << "Solver initialized." << std::endl; 
+  
+  std::cout << "Solver initialized." << std::endl;
+  std::cout << "\tN patients: " << n_patients << std::endl; 
+  std::cout << "\tBlock increment: " << block_incr << std::endl; 
+  std::cout << "\tFailure cost: " << failure_cost << std::endl; 
+  std::cout << "\tBlock cost: " << block_cost << std::endl; 
+  std::cout << "\tTest statistic: " << test_statistic << std::endl; 
   std::cout << "Solving." << std::endl;
   
   solver.solve();

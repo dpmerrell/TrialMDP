@@ -4,11 +4,30 @@
 // Implementation of TransitionDist class
 // and its subclasses.
 
+#define __STDCPP_WANT_MATH_SPEC_FUNCS__ 1
+
 #include "transition_dist.h"
 #include "contingency_table.h"
 #include <cmath>
-#include <boost/math/special_functions/beta.hpp>
 #include <string>
+
+// If we're on __linux__, use the std::beta function
+#ifdef __linux__
+
+float my_beta(float a, float b){
+    return std::beta(a,b);
+}
+
+// If we're on __APPLE__ or _WIN32, use the boost::math::beta function
+// (which seems to be slower...)
+#else
+
+#include <boost/math/special_functions/beta.hpp>
+float my_beta(float a, float b){
+    return boost::math::beta(a,b);
+}
+
+#endif 
 
 
 ////////////////////////////////
@@ -16,7 +35,7 @@
 ////////////////////////////////
 
 float binom_coeff(int n, int k){
-    return 1.0/((n+1.0)*boost::math::beta(n-k+1,k+1));
+    return 1.0/((n+1.0)*my_beta(n-k+1,k+1));
 }
 
 float binom_prob(int N, float p, int x){
@@ -61,7 +80,7 @@ void BinomTransitionDist::set_state_action(ContingencyTable ct,
 ////////////////////////////////
 
 float beta_binom_prob(int N, float pr_0, float pr_1, int x){
-    return binom_coeff(N,x) * boost::math::beta(x+pr_1, N - x + pr_0) / boost::math::beta(pr_1, pr_0);
+    return binom_coeff(N,x) * my_beta(x+pr_1, N - x + pr_0) / my_beta(pr_1, pr_0);
 }
 
 

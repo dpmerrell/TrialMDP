@@ -18,6 +18,7 @@
 #include "state_result.h"
 #include <vector>
 #include <iostream>
+#include <limits>
 
 /**
 *  Abstract base class
@@ -104,18 +105,27 @@ class CMHStatisticLR : public LookaheadRule{
                          int n_a, int n_b,
                          StateResult& next){
 
+
+            if (action_a == 0 || action_b == 0){
+                cmh = -std::numeric_limits<float>::infinity();
+                numerator = 0.0;
+                denom = 0.0;
+                return;
+            }
+
             float T = action_a + action_b;
             float num_next = next.values[numerator_idx];
-            numerator = (n_a - action_a * (n_a + n_b)/T) + num_next;
-
             float n = n_a + n_b;
+            numerator = (n_a - float(action_a)*n/T) + num_next;
+
             float denom_next = next.values[denom_idx];
-            denom = (action_a*action_b*n*(T-n))/(T*T*(T-1)) + denom_next;
+            denom = float(action_a*action_b*n*(T-n))/(T*T*(T-1)) + denom_next;
 
             cmh = 0.0;
             if(denom != 0.0){
                 cmh = numerator*numerator/denom;
             }
+
         }
 
 

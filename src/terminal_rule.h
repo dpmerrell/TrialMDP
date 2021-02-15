@@ -133,22 +133,20 @@ class FailureTerminalRule : public TerminalRule {
           // some useful row sums:
           float N_a = ct.a0 + ct.a1;
           float N_b = ct.b0 + ct.b1;
-          float p_a = 0.5;
-          if (N_a != 0.0){
-              p_a = float(ct.a1) / N_a;
-          } 
-          float p_b = 0.5;
-          if (N_b != 0.0){
-              p_b = float(ct.b1) / N_b;
-          }
           
           float failures;
-          if(p_a >= p_b){
-              failures = (p_a - p_b)*N_b;
+          if (N_a == 0.0 || N_b == 0.0){
+              failures = -std::numeric_limits<float>::infinity();
           } else{
-              failures = (p_b - p_a)*N_a;
+              float p_a = float(ct.a1) / N_a;
+              float p_b = float(ct.b1) / N_b;
+              
+              if(p_a >= p_b){
+                  failures = (p_a - p_b)*N_b;
+              } else{
+                  failures = (p_b - p_a)*N_a;
+              }
           }
-
           // Compute the linear combination of those
           // factors
           float rwd = -failure_cost*failures; 

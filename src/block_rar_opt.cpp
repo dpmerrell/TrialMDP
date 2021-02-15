@@ -27,6 +27,8 @@
  */
 StateResult BlockRAROpt::max_expected_reward(int cur_idx, ContingencyTable ct){
 
+    //ct.pretty_print();
+
     float FLOAT_NEG_INF = -std::numeric_limits<float>::infinity();
     int rwd_idx = n_attr - 1;
  
