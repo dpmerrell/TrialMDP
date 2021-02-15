@@ -1,3 +1,8 @@
+<!-- badges -->
+<!-- GitHub actions -->
+![build and test](https://github.com/dpmerrell/blockRARopt/workflows/build_and_test/badge.svg)
+
+
 # blockRARopt
 
 An optimization solver for block RAR RCT design -- all wrapped up in an R package.
