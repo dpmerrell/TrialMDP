@@ -58,7 +58,8 @@ class BlockRAROpt{
                     float prior_a0, float prior_a1,
                     float prior_b0, float prior_b1, 
                     std::string transition_dist="beta_binom",
-                    std::string test_statistic="wald");
+                    std::string test_statistic="wald",
+                    float act_l=0.2, float act_u=0.8, int act_n=7);
 
 	void solve();
 

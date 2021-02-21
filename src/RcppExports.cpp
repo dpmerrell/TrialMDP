@@ -6,8 +6,8 @@
 using namespace Rcpp;
 
 // block_rar_opt
-void block_rar_opt(int n_patients, int block_incr, float failure_cost, float block_cost, std::string sqlite_fname, float prior_a0, float prior_a1, float prior_b0, float prior_b1, std::string transition_dist, std::string test_statistic);
-RcppExport SEXP _blockRARopt_block_rar_opt(SEXP n_patientsSEXP, SEXP block_incrSEXP, SEXP failure_costSEXP, SEXP block_costSEXP, SEXP sqlite_fnameSEXP, SEXP prior_a0SEXP, SEXP prior_a1SEXP, SEXP prior_b0SEXP, SEXP prior_b1SEXP, SEXP transition_distSEXP, SEXP test_statisticSEXP) {
+void block_rar_opt(int n_patients, int block_incr, float failure_cost, float block_cost, std::string sqlite_fname, float prior_a0, float prior_a1, float prior_b0, float prior_b1, std::string transition_dist, std::string test_statistic, float act_l, float act_u, int act_n);
+RcppExport SEXP _blockRARopt_block_rar_opt(SEXP n_patientsSEXP, SEXP block_incrSEXP, SEXP failure_costSEXP, SEXP block_costSEXP, SEXP sqlite_fnameSEXP, SEXP prior_a0SEXP, SEXP prior_a1SEXP, SEXP prior_b0SEXP, SEXP prior_b1SEXP, SEXP transition_distSEXP, SEXP test_statisticSEXP, SEXP act_lSEXP, SEXP act_uSEXP, SEXP act_nSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type n_patients(n_patientsSEXP);
@@ -21,13 +21,16 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< float >::type prior_b1(prior_b1SEXP);
     Rcpp::traits::input_parameter< std::string >::type transition_dist(transition_distSEXP);
     Rcpp::traits::input_parameter< std::string >::type test_statistic(test_statisticSEXP);
-    block_rar_opt(n_patients, block_incr, failure_cost, block_cost, sqlite_fname, prior_a0, prior_a1, prior_b0, prior_b1, transition_dist, test_statistic);
+    Rcpp::traits::input_parameter< float >::type act_l(act_lSEXP);
+    Rcpp::traits::input_parameter< float >::type act_u(act_uSEXP);
+    Rcpp::traits::input_parameter< int >::type act_n(act_nSEXP);
+    block_rar_opt(n_patients, block_incr, failure_cost, block_cost, sqlite_fname, prior_a0, prior_a1, prior_b0, prior_b1, transition_dist, test_statistic, act_l, act_u, act_n);
     return R_NilValue;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_blockRARopt_block_rar_opt", (DL_FUNC) &_blockRARopt_block_rar_opt, 11},
+    {"_blockRARopt_block_rar_opt", (DL_FUNC) &_blockRARopt_block_rar_opt, 14},
     {NULL, NULL, 0}
 };
 

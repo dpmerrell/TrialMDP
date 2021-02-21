@@ -105,7 +105,8 @@ BlockRAROpt::BlockRAROpt(int n_p, int b_i, float f_c, float b_c,
                          float prior_a0, float prior_a1,
                          float prior_b0, float prior_b1,
                          std::string tr_dist,
-                         std::string test_statistic){
+                         std::string test_statistic,
+                         float act_l, float act_u, int act_n){
 
     n_patients = n_p;
     block_incr = b_i;
@@ -118,7 +119,7 @@ BlockRAROpt::BlockRAROpt(int n_p, int b_i, float f_c, float b_c,
 
     results_table = new BlockRARTable(n_p, b_i); 
     state_iterator = new StateIterator(*(results_table)); 
-    action_iterator = new ActionIterator(0.2, 0.8, 7, 
+    action_iterator = new ActionIterator(act_l, act_u, act_n, 
 		                         results_table->get_n_vec(),
                                          0);
 

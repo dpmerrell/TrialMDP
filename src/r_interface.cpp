@@ -19,7 +19,8 @@ void block_rar_opt(int n_patients, int block_incr,
                    float prior_b0 = 1.0,
                    float prior_b1 = 1.0,
                    std::string transition_dist="beta_binom",
-                   std::string test_statistic="wald") {
+                   std::string test_statistic="wald",
+                   float act_l=0.2, float act_u=0.8, int act_n=7) {
 
 
   BlockRAROpt solver = BlockRAROpt(n_patients, block_incr,
@@ -27,11 +28,13 @@ void block_rar_opt(int n_patients, int block_incr,
                                    prior_a0, prior_a1,
                                    prior_b0, prior_b1,
                                    transition_dist,
-                                   test_statistic);
+                                   test_statistic,
+                                   act_l, act_u, act_n);
   
   std::cout << "Solver initialized." << std::endl;
   std::cout << "\tN patients: " << n_patients << std::endl; 
-  std::cout << "\tBlock increment: " << block_incr << std::endl; 
+  std::cout << "\tBlock increment: " << block_incr << std::endl;
+  std::cout << "\tAllocations: {" << act_l << ", ..., " << act_u << "} (" << act_n << ")" << std::endl; 
   std::cout << "\tFailure cost: " << failure_cost << std::endl; 
   std::cout << "\tBlock cost: " << block_cost << std::endl; 
   std::cout << "\tTest statistic: " << test_statistic << std::endl; 
