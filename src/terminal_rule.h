@@ -134,23 +134,29 @@ class FailureTerminalRule : public TerminalRule {
           float N_a = ct.a0 + ct.a1;
           float N_b = ct.b0 + ct.b1;
           
-          float failures;
-          if (N_a == 0.0 || N_b == 0.0){
-              failures = -std::numeric_limits<float>::infinity();
-          } else{
-              float p_a = float(ct.a1) / N_a;
-              float p_b = float(ct.b1) / N_b;
-              
-              if(p_a >= p_b){
-                  failures = (p_a - p_b)*N_b;
-              } else{
-                  failures = (p_b - p_a)*N_a;
-              }
+          float p_a = 0.5;
+          if (N_a != 0.0){
+              p_a = float(ct.a1) / N_a;
+          } 
+          float p_b = 0.5;
+          if (N_b != 0.0){
+              p_b = float(ct.b1) / N_b;
           }
+          
+          float failures = 0.0;
+          if(p_a >= p_b){
+              failures = (p_a - p_b)*N_b;
+          }else{
+              failures = (p_b - p_a)*N_a;
+          }
+          
           // Compute the linear combination of those
           // factors
           float rwd = -failure_cost*failures; 
-          
+          if( N_a == 0.0 || N_b == 0.0 ){
+              rwd = -std::numeric_limits<float>::infinity();
+          }
+ 
           StateResult result = StateResult(interp.get_n_attr());
           for(unsigned int i=0; i < interp.get_n_attr(); ++i){
               result.values[i] = 0.0;
