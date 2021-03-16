@@ -17,7 +17,7 @@ ResultInterpreter::ResultInterpreter(std::string test_statistic,
 
     // We'll store the excess failures and
     // remaining blocks, regardless of 
-    attr_names.push_back("ExcessFailures");
+    attr_names.push_back("Failures");
     IdentityLR* xf_lr = new IdentityLR();
     lookahead_rules.push_back(xf_lr);
     int fail_idx = idx;

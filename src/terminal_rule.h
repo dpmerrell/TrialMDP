@@ -92,12 +92,12 @@ class WaldFailureTerminalRule : public TerminalRule {
           // Compute the "failures": the expected number of patients
           // that would have received a positive outcome, had they 
           // been given the superior treatment.
-          float failures;
-          if(p_a >= p_b){
-              failures = (p_a - p_b)*N_b;
-          } else{
-              failures = (p_b - p_a)*N_a;
-          }
+          float failures = ct.a0 + ct.b0;
+          //if(p_a >= p_b){
+          //    failures = (p_a - p_b)*N_b;
+          //} else{
+          //    failures = (p_b - p_a)*N_a;
+          //}
 
           // Compute the linear combination of those
           // factors
@@ -107,7 +107,7 @@ class WaldFailureTerminalRule : public TerminalRule {
           StateResult result = StateResult(interp.get_n_attr()); 
           interp.set_attr(result, "TotalReward", rwd);
           interp.set_attr(result, "WaldStatistic", W);
-          interp.set_attr(result, "ExcessFailures",  failures);
+          interp.set_attr(result, "Failures",  failures);
           interp.set_attr(result, "RemainingBlocks", 0.0);
 
           return result;
@@ -131,37 +131,39 @@ class FailureTerminalRule : public TerminalRule {
       StateResult operator()(ResultInterpreter interp, ContingencyTable ct){
     
           // some useful row sums:
-          float N_a = ct.a0 + ct.a1;
-          float N_b = ct.b0 + ct.b1;
-          
-          float p_a = 0.5;
-          if (N_a != 0.0){
-              p_a = float(ct.a1) / N_a;
-          } 
-          float p_b = 0.5;
-          if (N_b != 0.0){
-              p_b = float(ct.b1) / N_b;
-          }
-          
-          float failures = 0.0;
-          if(p_a >= p_b){
-              failures = (p_a - p_b)*N_b;
-          }else{
-              failures = (p_b - p_a)*N_a;
-          }
-          
-          // Compute the linear combination of those
-          // factors
-          float rwd = -failure_cost*failures; 
-          if( N_a == 0.0 || N_b == 0.0 ){
-              rwd = -std::numeric_limits<float>::infinity();
-          }
- 
+          //float N_a = ct.a0 + ct.a1;
+          //float N_b = ct.b0 + ct.b1;
+          //
+          //float p_a = 0.5;
+          //if (N_a != 0.0){
+          //    p_a = float(ct.a1) / N_a;
+          //} 
+          //float p_b = 0.5;
+          //if (N_b != 0.0){
+          //    p_b = float(ct.b1) / N_b;
+          //}
+          //
+          //float failures = 0.0;
+          //if(p_a >= p_b){
+          //    failures = (p_a - p_b)*N_b;
+          //}else{
+          //    failures = (p_b - p_a)*N_a;
+          //}
+          //
+          //// Compute the linear combination of those
+          //// factors
+          //float rwd = -failure_cost*failures; 
+          //if( N_a == 0.0 || N_b == 0.0 ){
+          //    rwd = -std::numeric_limits<float>::infinity();
+          //}
+
+          float failures = ct.a0 + ct.b0;
+          float rwd = -failure_cost*failures;
           StateResult result = StateResult(interp.get_n_attr());
           for(unsigned int i=0; i < interp.get_n_attr(); ++i){
               result.values[i] = 0.0;
           }
-          interp.set_attr(result, "ExcessFailures",  failures);
+          interp.set_attr(result, "Failures",  failures);
           interp.set_attr(result, "TotalReward", rwd);
 
           return result;
