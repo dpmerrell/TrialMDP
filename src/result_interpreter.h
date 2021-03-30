@@ -8,7 +8,7 @@
 // This keeps StateResult as lightweight as
 // possible, so the BlockRAROpt instance can store
 // an enormous table of them. 
-
+// 
 
 #ifndef __RESULT_INTERP_H_
 #define __RESULT_INTERP_H_
@@ -47,7 +47,6 @@ class ResultInterpreter{
                           float failure_cost,
                           float block_cost);
 
-
         float get_attr(StateResult& res, std::string attr_name); 
         void set_attr(StateResult& res, std::string attr_name, float new_value); 
 
@@ -61,6 +60,10 @@ class ResultInterpreter{
         std::string sql_create_table();
         std::string sql_insert_tuple(StateResult& res, ContingencyTable& ct);
 
+        // These functions encode how we compute results for
+        // this state from the results of a future state; 
+        // i.e., how the dynamic programming algorithm "looks ahead"
+        // to future states
         void compute_lookaheads(int a_A, int a_B, int n_A, int n_B, StateResult& next);
         void clear_lookaheads();
         float look_ahead(int idx);
