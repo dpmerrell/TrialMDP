@@ -164,6 +164,89 @@ class CMHStatisticLR : public LookaheadRule{
 };
 
 
+/*
+*  This lookahead rule computes a harmonic mean
+*  of N_A, N_B over *all* blocks.
+*/
+class HarmonicMeanLR : public LookaheadRule{
+
+    private:
+
+        int hm_idx;
+        int inv_idx;
+
+        float hm;
+        float inv;
+
+        void compute_hm(int action_a, int action_b,
+                        int n_a, int n_b,
+                        StateResult& next){
+
+
+            if (action_a == 0 || action_b == 0){
+                hm = -std::numeric_limits<float>::infinity();
+                inv = 0.0;
+                return;
+            }
+
+            inv = next.values[inv_idx] + (1.0/action_a) + (1.0/action_b);
+            hm = 1.0 / inv;
+        }
+
+
+    public:
+
+        HarmonicMeanLR(int hm_i, int inv_i){
+            hm_idx = hm_i;
+            inv_idx = inv_i;
+        }
+
+
+        void operator()(std::vector<float>& current,
+                        int action_a, int action_b,
+                        int n_a, int n_b,
+                        StateResult& next,
+                        int idx){
+
+            if(idx == hm_idx){
+                compute_hm(action_a, action_b,
+                           n_a, n_b, next);
+                current[idx] = hm;
+            }
+            else if(idx == inv_idx){
+                current[idx] = inv;
+            }
+            else{
+                throw 1;
+            }
+        }
+
+};
+
+
+/*
+*  This lookahead computes the harmonic mean of 
+*  N_A and N_B for this block, and subsequent blocks
+*/
+class BlockHarmonicMeanLR : public LookaheadRule{
+
+    public:
+
+        BlockHarmonicMeanLR(){ return; } 
+
+
+        void operator()(std::vector<float>& current,
+                         int action_a, int action_b,
+                         int n_a, int n_b,
+                         StateResult& next,
+                         int idx){
+            current[idx] = float(action_a * action_b)/float(action_a + action_b) + next.values[idx];
+        }
+
+
+};
+
+
 class LinCombLR : public LookaheadRule {
 
     private:

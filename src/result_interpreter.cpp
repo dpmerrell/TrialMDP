@@ -17,7 +17,7 @@ ResultInterpreter::ResultInterpreter(std::string test_statistic,
 
     // We'll store the excess failures and
     // remaining blocks, regardless of 
-    attr_names.push_back("Failures");
+    attr_names.push_back("Failure");
     IdentityLR* xf_lr = new IdentityLR();
     lookahead_rules.push_back(xf_lr);
     int fail_idx = idx;
@@ -36,6 +36,12 @@ ResultInterpreter::ResultInterpreter(std::string test_statistic,
         lookahead_rules.push_back(waldstat_lr);
         stat_idx = idx; 
         idx++;
+    }else if(test_statistic == "harmonic_mean"){
+        attr_names.push_back("HarmonicMean");
+        BlockHarmonicMeanLR* bharmonic_lr = new BlockHarmonicMeanLR();
+        lookahead_rules.push_back(bharmonic_lr);
+        stat_idx = idx;
+        idx++; 
     }else if(test_statistic == "cmh"){
 
         attr_names.push_back("CMHStatistic");
@@ -51,14 +57,24 @@ ResultInterpreter::ResultInterpreter(std::string test_statistic,
         attr_names.push_back("CMH_denominator");
         lookahead_rules.push_back(cmhstat_lr);
         idx++;
+    }else if(test_statistic == "harmonic_mean_2"){
+
+        attr_names.push_back("HarmonicMean");
+        HarmonicMeanLR* hm_lr = new HarmonicMeanLR(idx, idx+1);
+        lookahead_rules.push_back(hm_lr);
+        stat_idx = idx; 
+        idx++;
+
+        attr_names.push_back("HarmonicMean_inv");
+        lookahead_rules.push_back(hm_lr);
+        idx++;
     }
 
     attr_names.push_back("TotalReward");
     LinCombLR* rwd_lr = new LinCombLR(stat_idx, fail_idx, block_idx,
-                                       1.0, -failure_cost,-block_cost);
+                                      1.0, -failure_cost,-block_cost);
     lookahead_rules.push_back(rwd_lr);
     idx++;
-
 
     n_attr = attr_names.size();
     attr_to_idx = make_dict(attr_names);
