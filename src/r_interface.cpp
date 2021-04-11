@@ -10,6 +10,8 @@ using namespace Rcpp;
 
 // [[Rcpp::depends(BH)]]
 
+// [[Rcpp::plugins("cpp11")]]
+
 // [[Rcpp::export]]
 void block_rar_opt(int n_patients, int block_incr,
                    float failure_cost, float block_cost,

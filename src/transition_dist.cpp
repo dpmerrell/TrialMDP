@@ -11,23 +11,23 @@
 #include <cmath>
 #include <string>
 
-// If we're on __linux__, use the std::beta function
-#ifdef __linux__
-
-float my_beta(float a, float b){
-    return std::beta(a,b);
-}
-
-// If we're on __APPLE__ or _WIN32, use the boost::math::beta function
-// (which seems to be slower...)
-#else
+//// If we're on __linux__, use the std::beta function
+//#ifdef __linux__
+//
+//float my_beta(float a, float b){
+//    return std::beta(a,b);
+//}
+//
+//// If we're on __APPLE__ or _WIN32, use the boost::math::beta function
+//// (which seems to be slower...)
+//#else
 
 #include <boost/math/special_functions/beta.hpp>
 float my_beta(float a, float b){
     return boost::math::beta(a,b);
 }
 
-#endif 
+//#endif 
 
 
 ////////////////////////////////
