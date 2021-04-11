@@ -113,7 +113,7 @@ BlockRAROpt::BlockRAROpt(int n_p, int b_i, float f_c, float b_c,
     block_cost = b_c;
     failure_cost = f_c;
 
-    result_interpreter = ResultInterpreter(test_statistic, failure_cost, block_cost);
+    result_interpreter = ResultInterpreter(test_statistic, failure_cost, block_cost, n_patients);
 
     n_attr = result_interpreter.get_n_attr();
 

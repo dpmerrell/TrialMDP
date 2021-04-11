@@ -45,7 +45,7 @@ class ResultInterpreter{
 
         ResultInterpreter(std::string test_statistic,
                           float failure_cost,
-                          float block_cost);
+                          float block_cost, int n_pat);
 
         float get_attr(StateResult& res, std::string attr_name); 
         void set_attr(StateResult& res, std::string attr_name, float new_value); 

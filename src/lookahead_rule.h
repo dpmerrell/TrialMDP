@@ -165,6 +165,86 @@ class CMHStatisticLR : public LookaheadRule{
 
 
 /*
+* This lookahead computes the Cochran-Mantel-Haenszel
+* statistic for the current and subsequent blocks.
+*/
+class ScaledCMHStatisticLR : public LookaheadRule{
+
+    private:
+
+        int cmh_idx;
+        int numerator_idx;
+        int denom_idx;
+
+        float N;
+        float cmh;
+        float numerator;
+        float denom;
+
+        void compute_cmh(int action_a, int action_b,
+                         int n_a, int n_b,
+                         StateResult& next){
+
+
+            if (action_a == 0 || action_b == 0){
+                cmh = -std::numeric_limits<float>::infinity();
+                numerator = 0.0;
+                denom = 0.0;
+                return;
+            }
+
+            float T = action_a + action_b;
+            float num_next = next.values[numerator_idx];
+            float n = n_a + n_b;
+            numerator = (n_a - float(action_a)*n/T) + num_next;
+
+            float denom_next = next.values[denom_idx];
+            denom = float(action_a*action_b*n*(T-n))/(T*T*(T-1)) + denom_next;
+
+            cmh = 0.0;
+            if(denom != 0.0){
+                cmh = numerator*numerator / denom / N;
+            }
+
+        }
+
+
+    public:
+
+        ScaledCMHStatisticLR(int cmh_i, int num_i, int den_i, int N_in){
+            cmh_idx = cmh_i;
+            numerator_idx = num_i;
+            denom_idx = den_i;
+            N = float(N_in);
+        }
+
+
+        void operator()(std::vector<float>& current,
+                         int action_a, int action_b,
+                         int n_a, int n_b,
+                         StateResult& next,
+                         int idx){
+
+            if(idx == cmh_idx){
+                compute_cmh(action_a, action_b,
+                            n_a, n_b, next);
+                current[idx] = cmh;
+            }
+            else if(idx == numerator_idx){
+                current[idx] = numerator;
+            }
+            else if(idx == denom_idx){
+                current[idx] = denom;
+            }
+            else{
+                throw 1;
+            }
+        }
+
+};
+
+
+/*
 *  This lookahead rule computes a harmonic mean
 *  of N_A, N_B over *all* blocks.
 */

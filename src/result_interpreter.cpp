@@ -10,7 +10,8 @@
 
 ResultInterpreter::ResultInterpreter(std::string test_statistic,
                                      float failure_cost,
-                                     float block_cost){
+                                     float block_cost,
+                                     int n_pat){
     
     attr_names = std::vector<std::string>();
     int idx = 0;
@@ -46,6 +47,21 @@ ResultInterpreter::ResultInterpreter(std::string test_statistic,
 
         attr_names.push_back("CMHStatistic");
         CMHStatisticLR* cmhstat_lr = new CMHStatisticLR(idx, idx+1, idx+2);
+        lookahead_rules.push_back(cmhstat_lr);
+        stat_idx = idx; 
+        idx++;
+
+        attr_names.push_back("CMH_numerator_sqrt");
+        lookahead_rules.push_back(cmhstat_lr);
+        idx++;
+        
+        attr_names.push_back("CMH_denominator");
+        lookahead_rules.push_back(cmhstat_lr);
+        idx++;
+    }else if(test_statistic == "scaled_cmh"){
+
+        attr_names.push_back("ScaledCMHStatistic");
+        ScaledCMHStatisticLR* cmhstat_lr = new ScaledCMHStatisticLR(idx, idx+1, idx+2, n_pat);
         lookahead_rules.push_back(cmhstat_lr);
         stat_idx = idx; 
         idx++;

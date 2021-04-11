@@ -11,7 +11,7 @@ TerminalRule* TerminalRule::make_terminal_rule(std::string test_stat, float fail
     if (test_stat == "wald"){
       return new WaldFailureTerminalRule(failure_cost);
     }
-    else if (test_stat == "cmh" || test_stat == "harmonic_mean" || test_stat == "harmonic_mean_2"){
+    else if (test_stat == "cmh" || test_stat == "scaled_cmh" || test_stat == "harmonic_mean" || test_stat == "harmonic_mean_2"){
       return new RescaledFailureTerminalRule(failure_cost);
     }
     else{
