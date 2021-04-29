@@ -199,11 +199,7 @@ class RescaledFailureTerminalRule : public TerminalRule {
               float p_a = float(ct.a1) / N_a;
               float p_b = float(ct.b1) / N_b;
               
-              if(p_a >= p_b){
-                  failures = (p_a - p_b)*(N_b - N_a)/N;
-              }else{
-                  failures = (p_b - p_a)*(N_a - N_b)/N;
-              }
+              failures = (p_a - p_b)*(N_b - N_a)/N;
           
               // Compute the linear combination of those
               // factors

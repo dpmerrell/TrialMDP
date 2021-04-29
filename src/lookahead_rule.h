@@ -245,6 +245,109 @@ class ScaledCMHStatisticLR : public LookaheadRule{
 
 
 /*
+* This lookahead computes the Cochran-Mantel-Haenszel
+* statistic for the current and subsequent blocks.
+* It uses a second-order approximation to compute the 
+* expected value
+*/
+class ScaledCMH2ndOrderLR : public LookaheadRule{
+
+    private:
+
+        int cmh_idx;
+        int numerator_sqrt_idx;
+        int numerator_idx;
+        int denom_idx;
+        int denom2_idx;
+
+        float N;
+        float cmh;
+        float numerator_sqrt;
+        float numerator;
+        float denom;
+        float denom2;
+
+        void compute_cmh(int action_a, int action_b,
+                         int n_a, int n_b,
+                         StateResult& next){
+
+
+            if (action_a == 0 || action_b == 0){
+                cmh = -std::numeric_limits<float>::infinity();
+                numerator = 0.0;
+                denom = 0.0;
+                return;
+            }
+
+            float T = action_a + action_b;
+            float num_sqrt_next = next.values[numerator_sqrt_idx];
+            float num_next = next.values[numerator_idx];
+            float n = n_a + n_b;
+            float nterm = (n_a - float(action_a)*n/T);
+            float dterm = float(action_a*action_b*n*(T-n))/(T*T*(T-1));
+ 
+            numerator_sqrt = nterm + num_sqrt_next;
+            numerator = numerator_sqrt*numerator_sqrt;
+
+            float denom_next = next.values[denom_idx];
+            float denom2_next = next.values[denom2_idx];
+            denom = dterm + denom_next;
+            denom2 = denom*denom;
+
+            cmh = 0.0;
+            if(denom != 0.0){
+                cmh = ( (nterm * ( nterm + 2.0*num_sqrt_next ) + num_next)  
+                       +(numerator * (denom2_next - denom_next*denom_next) ) / denom2  
+                      )/ denom / N;
+            }
+
+        }
+
+
+    public:
+
+        ScaledCMH2ndOrderLR(int cmh_i, int num_sq_i, int num_i, int den_i, int den2_i, int N_in){
+            cmh_idx = cmh_i;
+            numerator_sqrt_idx = num_sq_i;
+            numerator_idx = num_i;
+            denom_idx = den_i;
+            denom2_idx = den2_i;
+            N = float(N_in);
+        }
+
+
+        void operator()(std::vector<float>& current,
+                         int action_a, int action_b,
+                         int n_a, int n_b,
+                         StateResult& next,
+                         int idx){
+
+            if(idx == cmh_idx){
+                compute_cmh(action_a, action_b,
+                            n_a, n_b, next);
+                current[idx] = cmh;
+            }
+            else if(idx == numerator_sqrt_idx){
+                current[idx] = numerator_sqrt;
+            }
+            else if(idx == numerator_idx){
+                current[idx] = numerator;
+            }
+            else if(idx == denom_idx){
+                current[idx] = denom;
+            }
+            else if(idx == denom2_idx){
+                current[idx] = denom2;
+            }
+            else{
+                throw 1;
+            }
+        }
+
+};
+
+
+/*
 *  This lookahead rule computes a harmonic mean
 *  of N_A, N_B over *all* blocks.
 */
@@ -257,11 +360,11 @@ class HarmonicMeanLR : public LookaheadRule{
 
         float hm;
         float inv;
+        float N;
 
         void compute_hm(int action_a, int action_b,
                         int n_a, int n_b,
                         StateResult& next){
-
 
             if (action_a == 0 || action_b == 0){
                 hm = -std::numeric_limits<float>::infinity();
