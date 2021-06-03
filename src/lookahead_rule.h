@@ -258,14 +258,12 @@ class ScaledCMH2ndOrderLR : public LookaheadRule{
         int numerator_sqrt_idx;
         int numerator_idx;
         int denom_idx;
-        int denom2_idx;
 
         float N;
         float cmh;
         float numerator_sqrt;
         float numerator;
         float denom;
-        float denom2;
 
         void compute_cmh(int action_a, int action_b,
                          int n_a, int n_b,
@@ -274,6 +272,7 @@ class ScaledCMH2ndOrderLR : public LookaheadRule{
 
             if (action_a == 0 || action_b == 0){
                 cmh = -std::numeric_limits<float>::infinity();
+                numerator_sqrt = 0.0;
                 numerator = 0.0;
                 denom = 0.0;
                 return;
@@ -287,18 +286,15 @@ class ScaledCMH2ndOrderLR : public LookaheadRule{
             float dterm = float(action_a*action_b*n*(T-n))/(T*T*(T-1));
  
             numerator_sqrt = nterm + num_sqrt_next;
-            numerator = numerator_sqrt*numerator_sqrt;
+            //numerator = numerator_sqrt*numerator_sqrt;
+            numerator = nterm * ( nterm + 2.0*num_sqrt_next ) + num_next;
 
             float denom_next = next.values[denom_idx];
-            float denom2_next = next.values[denom2_idx];
             denom = dterm + denom_next;
-            denom2 = denom*denom;
 
             cmh = 0.0;
             if(denom != 0.0){
-                cmh = ( (nterm * ( nterm + 2.0*num_sqrt_next ) + num_next)  
-                       +(numerator * (denom2_next - denom_next*denom_next) ) / denom2  
-                      )/ denom / N;
+                cmh = numerator / denom / N;
             }
 
         }
@@ -306,21 +302,20 @@ class ScaledCMH2ndOrderLR : public LookaheadRule{
 
     public:
 
-        ScaledCMH2ndOrderLR(int cmh_i, int num_sq_i, int num_i, int den_i, int den2_i, int N_in){
+        ScaledCMH2ndOrderLR(int cmh_i, int num_sq_i, int num_i, int den_i, int N_in){
             cmh_idx = cmh_i;
             numerator_sqrt_idx = num_sq_i;
             numerator_idx = num_i;
             denom_idx = den_i;
-            denom2_idx = den2_i;
             N = float(N_in);
         }
 
 
         void operator()(std::vector<float>& current,
-                         int action_a, int action_b,
-                         int n_a, int n_b,
-                         StateResult& next,
-                         int idx){
+                        int action_a, int action_b,
+                        int n_a, int n_b,
+                        StateResult& next,
+                        int idx){
 
             if(idx == cmh_idx){
                 compute_cmh(action_a, action_b,
@@ -335,9 +330,6 @@ class ScaledCMH2ndOrderLR : public LookaheadRule{
             }
             else if(idx == denom_idx){
                 current[idx] = denom;
-            }
-            else if(idx == denom2_idx){
-                current[idx] = denom2;
             }
             else{
                 throw 1;
@@ -427,6 +419,94 @@ class BlockHarmonicMeanLR : public LookaheadRule{
         }
 
 
+};
+
+
+/*
+* This lookahead computes a function of the harmonic mean:
+*     V = (sum w_i)^2 / sum (w_i*p*q)
+* where each w_i is the harmonic mean of N_{A,i} and N_{B,i}. 
+*/
+class HarmonicMeanDSQ : public LookaheadRule{
+
+    private:
+
+        int v_idx;
+        int numerator_sqrt_idx;
+        int numerator_idx;
+        int denom_idx;
+
+        float v;
+        float numerator_sqrt;
+        float numerator;
+        float denom;
+
+        void compute_v(int action_a, int action_b,
+                       int n_a, int n_b,
+                       StateResult& next){
+
+
+            if (action_a == 0 || action_b == 0){
+                v = -std::numeric_limits<float>::infinity();
+                numerator_sqrt = 0.0;
+                numerator = 0.0;
+                denom = 0.0;
+                return;
+            }
+
+            float T = action_a + action_b;
+            float w = action_a*action_b / T;
+            float num_sqrt_next = next.values[numerator_sqrt_idx];
+            float num_next = next.values[numerator_idx];
+ 
+            numerator_sqrt = w + num_sqrt_next;
+            numerator = w * ( w + 2.0*num_sqrt_next ) + num_next;
+
+            float denom_next = next.values[denom_idx];
+            denom = (w*w) + denom_next;
+
+            v = 0.0;
+            if(denom != 0.0){
+                v = numerator / denom ;
+            }
+
+        }
+
+
+    public:
+
+        HarmonicMeanDSQ(int v_i, int num_sq_i, int num_i, int den_i){
+            v_idx = v_i;
+            numerator_sqrt_idx = num_sq_i;
+            numerator_idx = num_i;
+            denom_idx = den_i;
+        }
+
+
+        void operator()(std::vector<float>& current,
+                        int action_a, int action_b,
+                        int n_a, int n_b,
+                        StateResult& next,
+                        int idx){
+
+            if(idx == v_idx){
+                compute_v(action_a, action_b,
+                          n_a, n_b, next);
+                current[idx] = v;
+            }
+            else if(idx == numerator_sqrt_idx){
+                current[idx] = numerator_sqrt;
+            }
+            else if(idx == numerator_idx){
+                current[idx] = numerator;
+            }
+            else if(idx == denom_idx){
+                current[idx] = denom;
+            }
+            else{
+                throw 1;
+            }
+        }
 };
 
 

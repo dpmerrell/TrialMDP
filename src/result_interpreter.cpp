@@ -76,7 +76,7 @@ ResultInterpreter::ResultInterpreter(std::string test_statistic,
     }else if(test_statistic == "scaled_cmh_2o"){
 
         attr_names.push_back("ScaledCMHStatistic");
-        ScaledCMH2ndOrderLR* cmhstat_lr = new ScaledCMH2ndOrderLR(idx, idx+1, idx+2, idx+3, idx+4, n_pat);
+        ScaledCMH2ndOrderLR* cmhstat_lr = new ScaledCMH2ndOrderLR(idx, idx+1, idx+2, idx+3, n_pat);
         lookahead_rules.push_back(cmhstat_lr);
         stat_idx = idx; 
         idx++;
@@ -93,10 +93,6 @@ ResultInterpreter::ResultInterpreter(std::string test_statistic,
         lookahead_rules.push_back(cmhstat_lr);
         idx++;
         
-        attr_names.push_back("CMH_denominator2");
-        lookahead_rules.push_back(cmhstat_lr);
-        idx++;
-
     }else if(test_statistic == "harmonic_mean_2"){
 
         attr_names.push_back("HarmonicMean");
@@ -108,7 +104,25 @@ ResultInterpreter::ResultInterpreter(std::string test_statistic,
         attr_names.push_back("HarmonicMean_inv");
         lookahead_rules.push_back(hm_lr);
         idx++;
-    }
+    }else if(test_statistic == "hm_dsq"){
+        attr_names.push_back("HarmonicMeanDSQ");
+        HarmonicMeanDSQ* hmdsq_lr = new HarmonicMeanDSQ(idx, idx+1, idx+2, idx+3);
+        lookahead_rules.push_back(hmdsq_lr);
+        stat_idx = idx; 
+        idx++;
+
+        attr_names.push_back("DSQ_numerator_sqrt");
+        lookahead_rules.push_back(hmdsq_lr);
+        idx++;
+        
+        attr_names.push_back("DSQ_numerator");
+        lookahead_rules.push_back(hmdsq_lr);
+        idx++;
+        
+        attr_names.push_back("DSQ_denominator");
+        lookahead_rules.push_back(hmdsq_lr);
+        idx++;
+    }   
 
     attr_names.push_back("TotalReward");
     LinCombLR* rwd_lr = new LinCombLR(stat_idx, fail_idx, block_idx,
