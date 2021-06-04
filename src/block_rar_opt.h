@@ -54,7 +54,8 @@ class BlockRAROpt{
     public:
 
         // Constructor
-	BlockRAROpt(int n_patients, int block_incr, float failure_cost, float block_cost,
+	BlockRAROpt(int n_patients, float failure_cost, float block_cost,
+                    int min_size, int block_incr, 
                     float prior_a0, float prior_a1,
                     float prior_b0, float prior_b1, 
                     std::string transition_dist="beta_binom",

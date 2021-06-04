@@ -25,7 +25,7 @@ class BlockRARTable{
 	std::vector<int> n_vec;
 
     public:
-        BlockRARTable(int n_max, int n_incr);
+        BlockRARTable(int n_max, int min_size, int n_incr);
 
 	BlockRARTable(){
             results = std::vector< std::unordered_map<ContingencyTable, StateResult, CTHash>* >();

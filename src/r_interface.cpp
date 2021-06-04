@@ -13,9 +13,11 @@ using namespace Rcpp;
 // [[Rcpp::plugins("cpp11")]]
 
 // [[Rcpp::export]]
-void block_rar_opt(int n_patients, int block_incr,
+void block_rar_opt(int n_patients,
                    float failure_cost, float block_cost,
                    std::string sqlite_fname,
+                   int min_size=4,
+                   int block_incr=2,
                    float prior_a0 = 1.0,
                    float prior_a1 = 1.0,
                    float prior_b0 = 1.0,
@@ -25,8 +27,9 @@ void block_rar_opt(int n_patients, int block_incr,
                    float act_l=0.2, float act_u=0.8, int act_n=7) {
 
 
-  BlockRAROpt solver = BlockRAROpt(n_patients, block_incr,
+  BlockRAROpt solver = BlockRAROpt(n_patients,
                                    failure_cost, block_cost,
+                                   min_size, block_incr,
                                    prior_a0, prior_a1,
                                    prior_b0, prior_b1,
                                    transition_dist,
@@ -35,6 +38,7 @@ void block_rar_opt(int n_patients, int block_incr,
   
   std::cout << "Solver initialized." << std::endl;
   std::cout << "\tN patients: " << n_patients << std::endl; 
+  std::cout << "\tMin block size: " << min_size << std::endl;
   std::cout << "\tBlock increment: " << block_incr << std::endl;
   std::cout << "\tAllocations: {" << act_l << ", ..., " << act_u << "} (" << act_n << ")" << std::endl; 
   std::cout << "\tFailure cost: " << failure_cost << std::endl; 
@@ -48,7 +52,7 @@ void block_rar_opt(int n_patients, int block_incr,
   char* fname = new char[sqlite_fname.length() + 1];
   strcpy(fname, sqlite_fname.c_str());
   
-  solver.to_sqlite(fname, 100);
+  solver.to_sqlite(fname, 10000);
   std::cout << "Saved to file: " << sqlite_fname << std::endl;
   
   delete[] fname;

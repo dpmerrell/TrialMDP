@@ -6,15 +6,16 @@
 using namespace Rcpp;
 
 // block_rar_opt
-void block_rar_opt(int n_patients, int block_incr, float failure_cost, float block_cost, std::string sqlite_fname, float prior_a0, float prior_a1, float prior_b0, float prior_b1, std::string transition_dist, std::string test_statistic, float act_l, float act_u, int act_n);
-RcppExport SEXP _blockRARopt_block_rar_opt(SEXP n_patientsSEXP, SEXP block_incrSEXP, SEXP failure_costSEXP, SEXP block_costSEXP, SEXP sqlite_fnameSEXP, SEXP prior_a0SEXP, SEXP prior_a1SEXP, SEXP prior_b0SEXP, SEXP prior_b1SEXP, SEXP transition_distSEXP, SEXP test_statisticSEXP, SEXP act_lSEXP, SEXP act_uSEXP, SEXP act_nSEXP) {
+void block_rar_opt(int n_patients, float failure_cost, float block_cost, std::string sqlite_fname, int min_size, int block_incr, float prior_a0, float prior_a1, float prior_b0, float prior_b1, std::string transition_dist, std::string test_statistic, float act_l, float act_u, int act_n);
+RcppExport SEXP _blockRARopt_block_rar_opt(SEXP n_patientsSEXP, SEXP failure_costSEXP, SEXP block_costSEXP, SEXP sqlite_fnameSEXP, SEXP min_sizeSEXP, SEXP block_incrSEXP, SEXP prior_a0SEXP, SEXP prior_a1SEXP, SEXP prior_b0SEXP, SEXP prior_b1SEXP, SEXP transition_distSEXP, SEXP test_statisticSEXP, SEXP act_lSEXP, SEXP act_uSEXP, SEXP act_nSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type n_patients(n_patientsSEXP);
-    Rcpp::traits::input_parameter< int >::type block_incr(block_incrSEXP);
     Rcpp::traits::input_parameter< float >::type failure_cost(failure_costSEXP);
     Rcpp::traits::input_parameter< float >::type block_cost(block_costSEXP);
     Rcpp::traits::input_parameter< std::string >::type sqlite_fname(sqlite_fnameSEXP);
+    Rcpp::traits::input_parameter< int >::type min_size(min_sizeSEXP);
+    Rcpp::traits::input_parameter< int >::type block_incr(block_incrSEXP);
     Rcpp::traits::input_parameter< float >::type prior_a0(prior_a0SEXP);
     Rcpp::traits::input_parameter< float >::type prior_a1(prior_a1SEXP);
     Rcpp::traits::input_parameter< float >::type prior_b0(prior_b0SEXP);
@@ -24,13 +25,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< float >::type act_l(act_lSEXP);
     Rcpp::traits::input_parameter< float >::type act_u(act_uSEXP);
     Rcpp::traits::input_parameter< int >::type act_n(act_nSEXP);
-    block_rar_opt(n_patients, block_incr, failure_cost, block_cost, sqlite_fname, prior_a0, prior_a1, prior_b0, prior_b1, transition_dist, test_statistic, act_l, act_u, act_n);
+    block_rar_opt(n_patients, failure_cost, block_cost, sqlite_fname, min_size, block_incr, prior_a0, prior_a1, prior_b0, prior_b1, transition_dist, test_statistic, act_l, act_u, act_n);
     return R_NilValue;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_blockRARopt_block_rar_opt", (DL_FUNC) &_blockRARopt_block_rar_opt, 14},
+    {"_blockRARopt_block_rar_opt", (DL_FUNC) &_blockRARopt_block_rar_opt, 15},
     {NULL, NULL, 0}
 };
 

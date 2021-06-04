@@ -27,8 +27,6 @@
  */
 StateResult BlockRAROpt::max_expected_reward(int cur_idx, ContingencyTable ct){
 
-    //ct.pretty_print();
-
     float FLOAT_NEG_INF = -std::numeric_limits<float>::infinity();
     int rwd_idx = n_attr - 1;
  
@@ -45,7 +43,7 @@ StateResult BlockRAROpt::max_expected_reward(int cur_idx, ContingencyTable ct){
     while (action_iterator->not_finished()){
 
         // Get the size index of the resulting contingency table
-	int result_size_idx = action_iterator->get_block_size_idx();
+	int result_size_idx = action_iterator->get_next_size_idx();
 
         float prob = 0.0;
         // Initialize expected reward (and other values):
@@ -101,26 +99,23 @@ StateResult BlockRAROpt::max_expected_reward(int cur_idx, ContingencyTable ct){
 
 
 // Constructor
-BlockRAROpt::BlockRAROpt(int n_p, int b_i, float f_c, float b_c, 
+BlockRAROpt::BlockRAROpt(int n_patients, float failure_cost, float block_cost,
+                         int min_size, int block_incr, 
                          float prior_a0, float prior_a1,
                          float prior_b0, float prior_b1,
                          std::string tr_dist,
                          std::string test_statistic,
                          float act_l, float act_u, int act_n){
 
-    n_patients = n_p;
-    block_incr = b_i;
-    block_cost = b_c;
-    failure_cost = f_c;
-
     result_interpreter = ResultInterpreter(test_statistic, failure_cost, block_cost, n_patients);
 
     n_attr = result_interpreter.get_n_attr();
 
-    results_table = new BlockRARTable(n_p, b_i); 
+    results_table = new BlockRARTable(n_patients, min_size, block_incr); 
     state_iterator = new StateIterator(*(results_table)); 
     action_iterator = new ActionIterator(act_l, act_u, act_n, 
 		                         results_table->get_n_vec(),
+                                         min_size,
                                          0);
 
     transition_dist = TransitionDist::make_transition_dist(tr_dist,
