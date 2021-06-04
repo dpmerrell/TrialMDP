@@ -106,7 +106,7 @@ ResultInterpreter::ResultInterpreter(std::string test_statistic,
         idx++;
     }else if(test_statistic == "hm_dsq"){
         attr_names.push_back("HarmonicMeanDSQ");
-        HarmonicMeanDSQ* hmdsq_lr = new HarmonicMeanDSQ(idx, idx+1, idx+2, idx+3);
+        HarmonicMeanDSQ* hmdsq_lr = new HarmonicMeanDSQ(idx, idx+1, idx+2, idx+3, n_pat);
         lookahead_rules.push_back(hmdsq_lr);
         stat_idx = idx; 
         idx++;
@@ -163,10 +163,11 @@ float ResultInterpreter::look_ahead(int idx){
     return lookahead_values[idx];
 }
 
-void ResultInterpreter::compute_lookaheads(int a_A, int a_B, int n_A, int n_B,
-                                            StateResult& next){
+void ResultInterpreter::compute_lookaheads(ContingencyTable& current_state,
+                                           int a_A, int a_B, int n_A, int n_B,
+                                           StateResult& next_state){
     for(unsigned int i=0; i < lookahead_rules.size(); ++i){
-        (*(lookahead_rules[i]))(lookahead_values, a_A, a_B, n_A, n_B, next, i); 
+        (*(lookahead_rules[i]))(lookahead_values, current_state, a_A, a_B, n_A, n_B, next_state, i); 
     }
 }
 

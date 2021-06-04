@@ -64,7 +64,7 @@ class ResultInterpreter{
         // this state from the results of a future state; 
         // i.e., how the dynamic programming algorithm "looks ahead"
         // to future states
-        void compute_lookaheads(int a_A, int a_B, int n_A, int n_B, StateResult& next);
+        void compute_lookaheads(ContingencyTable& current_state, int a_A, int a_B, int n_A, int n_B, StateResult& next_state);
         void clear_lookaheads();
         float look_ahead(int idx);
 

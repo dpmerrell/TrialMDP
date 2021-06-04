@@ -71,7 +71,7 @@ StateResult BlockRAROpt::max_expected_reward(int cur_idx, ContingencyTable ct){
 	    // Get the probability of this transition
 	    // and update the expected values:
 	    prob = transition_dist->prob(n_A, n_B);
-            result_interpreter.compute_lookaheads(a_A, a_B, n_A, n_B, tr_res);
+            result_interpreter.compute_lookaheads(ct, a_A, a_B, n_A, n_B, tr_res);
             for(unsigned int i=0; i < n_attr; ++i){
                 expected_values.values[i] += (prob * result_interpreter.look_ahead(i));
             } 

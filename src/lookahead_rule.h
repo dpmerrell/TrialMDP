@@ -16,6 +16,7 @@
 #define __LOOKAHEAD_RULE_H_
 
 #include "state_result.h"
+#include "contingency_table.h"
 #include <vector>
 #include <iostream>
 #include <limits>
@@ -26,11 +27,12 @@
 class LookaheadRule{
 
     public:
-        virtual void operator()(std::vector<float>& current,
-                                 int action_a, int action_b,
-                                 int n_a, int n_b,
-                                 StateResult& next,
-                                 int idx) = 0;
+        virtual void operator()(std::vector<float>& current_values,
+                                ContingencyTable& current_state,
+                                int action_a, int action_b,
+                                int n_a, int n_b,
+                                StateResult& next,
+                                int idx) = 0;
 
 };
 
@@ -42,12 +44,13 @@ class IdentityLR : public LookaheadRule{
 
     public:
 
-        void operator()(std::vector<float>& current,
-                         int action_a, int action_b,
-                         int n_a, int n_b,
-                         StateResult& next,
-                         int idx){
-            current[idx] = next.values[idx];
+        void operator()(std::vector<float>& current_values,
+                        ContingencyTable& current_state,
+                        int action_a, int action_b,
+                        int n_a, int n_b,
+                        StateResult& next,
+                        int idx){
+            current_values[idx] = next.values[idx];
         }
 
 };
@@ -74,12 +77,13 @@ class AddConstLR : public LookaheadRule{
             a = addend;
         }
 
-        void operator()(std::vector<float>& current,
-                         int action_a, int action_b,
-                         int n_a, int n_b,
-                         StateResult& next,
-                         int idx){
-            current[idx] = next.values[idx] + a;
+        void operator()(std::vector<float>& current_values,
+                        ContingencyTable& current_state,
+                        int action_a, int action_b,
+                        int n_a, int n_b,
+                        StateResult& next,
+                        int idx){
+            current_values[idx] = next.values[idx] + a;
         }
 
 };
@@ -138,22 +142,23 @@ class CMHStatisticLR : public LookaheadRule{
         }
 
 
-        void operator()(std::vector<float>& current,
-                         int action_a, int action_b,
-                         int n_a, int n_b,
-                         StateResult& next,
-                         int idx){
+        void operator()(std::vector<float>& current_values,
+                        ContingencyTable& current_state,
+                        int action_a, int action_b,
+                        int n_a, int n_b,
+                        StateResult& next,
+                        int idx){
 
             if(idx == cmh_idx){
                 compute_cmh(action_a, action_b,
                             n_a, n_b, next);
-                current[idx] = cmh;
+                current_values[idx] = cmh;
             }
             else if(idx == numerator_idx){
-                current[idx] = numerator;
+                current_values[idx] = numerator;
             }
             else if(idx == denom_idx){
-                current[idx] = denom;
+                current_values[idx] = denom;
             }
             else{
                 throw 1;
@@ -219,22 +224,23 @@ class ScaledCMHStatisticLR : public LookaheadRule{
         }
 
 
-        void operator()(std::vector<float>& current,
-                         int action_a, int action_b,
-                         int n_a, int n_b,
-                         StateResult& next,
-                         int idx){
+        void operator()(std::vector<float>& current_values,
+                        ContingencyTable& current_state,
+                        int action_a, int action_b,
+                        int n_a, int n_b,
+                        StateResult& next,
+                        int idx){
 
             if(idx == cmh_idx){
                 compute_cmh(action_a, action_b,
                             n_a, n_b, next);
-                current[idx] = cmh;
+                current_values[idx] = cmh;
             }
             else if(idx == numerator_idx){
-                current[idx] = numerator;
+                current_values[idx] = numerator;
             }
             else if(idx == denom_idx){
-                current[idx] = denom;
+                current_values[idx] = denom;
             }
             else{
                 throw 1;
@@ -311,7 +317,8 @@ class ScaledCMH2ndOrderLR : public LookaheadRule{
         }
 
 
-        void operator()(std::vector<float>& current,
+        void operator()(std::vector<float>& current_values,
+                        ContingencyTable& current_state,
                         int action_a, int action_b,
                         int n_a, int n_b,
                         StateResult& next,
@@ -320,16 +327,16 @@ class ScaledCMH2ndOrderLR : public LookaheadRule{
             if(idx == cmh_idx){
                 compute_cmh(action_a, action_b,
                             n_a, n_b, next);
-                current[idx] = cmh;
+                current_values[idx] = cmh;
             }
             else if(idx == numerator_sqrt_idx){
-                current[idx] = numerator_sqrt;
+                current_values[idx] = numerator_sqrt;
             }
             else if(idx == numerator_idx){
-                current[idx] = numerator;
+                current_values[idx] = numerator;
             }
             else if(idx == denom_idx){
-                current[idx] = denom;
+                current_values[idx] = denom;
             }
             else{
                 throw 1;
@@ -377,7 +384,8 @@ class HarmonicMeanLR : public LookaheadRule{
         }
 
 
-        void operator()(std::vector<float>& current,
+        void operator()(std::vector<float>& current_values,
+                        ContingencyTable& current_state,
                         int action_a, int action_b,
                         int n_a, int n_b,
                         StateResult& next,
@@ -386,10 +394,10 @@ class HarmonicMeanLR : public LookaheadRule{
             if(idx == hm_idx){
                 compute_hm(action_a, action_b,
                            n_a, n_b, next);
-                current[idx] = hm;
+                current_values[idx] = hm;
             }
             else if(idx == inv_idx){
-                current[idx] = inv;
+                current_values[idx] = inv;
             }
             else{
                 throw 1;
@@ -410,12 +418,13 @@ class BlockHarmonicMeanLR : public LookaheadRule{
         BlockHarmonicMeanLR(){ return; } 
 
 
-        void operator()(std::vector<float>& current,
-                         int action_a, int action_b,
-                         int n_a, int n_b,
-                         StateResult& next,
-                         int idx){
-            current[idx] = float(action_a * action_b)/float(action_a + action_b) + next.values[idx];
+        void operator()(std::vector<float>& current_values,
+                        ContingencyTable& current_state,
+                        int action_a, int action_b,
+                        int n_a, int n_b,
+                        StateResult& next,
+                        int idx){
+            current_values[idx] = float(action_a * action_b)/float(action_a + action_b) + next.values[idx];
         }
 
 
@@ -424,7 +433,7 @@ class BlockHarmonicMeanLR : public LookaheadRule{
 
 /*
 * This lookahead computes a function of the harmonic mean:
-*     V = (sum w_i)^2 / sum (w_i*p*q)
+*     V = (sum w_i)^2 / sum (w_i^2 * (pq)
 * where each w_i is the harmonic mean of N_{A,i} and N_{B,i}. 
 */
 class HarmonicMeanDSQ : public LookaheadRule{
@@ -440,8 +449,10 @@ class HarmonicMeanDSQ : public LookaheadRule{
         float numerator_sqrt;
         float numerator;
         float denom;
+        float N_inv;
 
-        void compute_v(int action_a, int action_b,
+        void compute_v(ContingencyTable& current_state,
+                       int action_a, int action_b,
                        int n_a, int n_b,
                        StateResult& next){
 
@@ -456,6 +467,13 @@ class HarmonicMeanDSQ : public LookaheadRule{
 
             float T = action_a + action_b;
             float w = action_a*action_b / T;
+
+            float p_a = float(current_state.a1 + 1) / float(current_state.a1 + current_state.a0 + 2.0);
+            float q_a = 1.0 - p_a; 
+            float p_b = float(current_state.b1 + 1) / float(current_state.b1 + current_state.b0 + 2.0);
+            float q_b = 1.0 - p_b;
+            float pq_hat = (p_a*q_a/action_a) + (p_b*q_b/action_b);
+            
             float num_sqrt_next = next.values[numerator_sqrt_idx];
             float num_next = next.values[numerator_idx];
  
@@ -463,11 +481,11 @@ class HarmonicMeanDSQ : public LookaheadRule{
             numerator = w * ( w + 2.0*num_sqrt_next ) + num_next;
 
             float denom_next = next.values[denom_idx];
-            denom = (w*w) + denom_next;
+            denom = (w*w*pq_hat) + denom_next;
 
             v = 0.0;
             if(denom != 0.0){
-                v = numerator / denom ;
+                v = N_inv * numerator / denom;
             }
 
         }
@@ -475,33 +493,36 @@ class HarmonicMeanDSQ : public LookaheadRule{
 
     public:
 
-        HarmonicMeanDSQ(int v_i, int num_sq_i, int num_i, int den_i){
+        HarmonicMeanDSQ(int v_i, int num_sq_i, int num_i, int den_i, int n_pat){
             v_idx = v_i;
             numerator_sqrt_idx = num_sq_i;
             numerator_idx = num_i;
             denom_idx = den_i;
+            N_inv = 1.0 / float(n_pat);
         }
 
 
-        void operator()(std::vector<float>& current,
+        void operator()(std::vector<float>& current_values,
+                        ContingencyTable& current_state,
                         int action_a, int action_b,
                         int n_a, int n_b,
                         StateResult& next,
                         int idx){
 
             if(idx == v_idx){
-                compute_v(action_a, action_b,
+                compute_v(current_state, 
+                          action_a, action_b,
                           n_a, n_b, next);
-                current[idx] = v;
+                current_values[idx] = v;
             }
             else if(idx == numerator_sqrt_idx){
-                current[idx] = numerator_sqrt;
+                current_values[idx] = numerator_sqrt;
             }
             else if(idx == numerator_idx){
-                current[idx] = numerator;
+                current_values[idx] = numerator;
             }
             else if(idx == denom_idx){
-                current[idx] = denom;
+                current_values[idx] = denom;
             }
             else{
                 throw 1;
@@ -543,12 +564,13 @@ class LinCombLR : public LookaheadRule {
             c = cc;
         }
 
-        void operator()(std::vector<float>& current,
-                         int action_a, int action_b,
-                         int n_a, int n_b,
-                         StateResult& next,
-                         int idx){
-            current[idx] = current[a_idx]*a + current[b_idx]*b + current[c_idx]*c;
+        void operator()(std::vector<float>& current_values,
+                        ContingencyTable& current_state,
+                        int action_a, int action_b,
+                        int n_a, int n_b,
+                        StateResult& next,
+                        int idx){
+            current_values[idx] = current_values[a_idx]*a + current_values[b_idx]*b + current_values[c_idx]*c;
         }
 
         
