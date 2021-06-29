@@ -2,7 +2,7 @@
 // (c) 2020 David Merrell
 //
 
-#include "block_rar_opt.h"
+#include "trial_mdp.h"
 #include <string>
 #include <iostream>
 #include <Rcpp.h>
@@ -13,28 +13,28 @@ using namespace Rcpp;
 // [[Rcpp::plugins("cpp11")]]
 
 // [[Rcpp::export]]
-void block_rar_opt(int n_patients,
-                   float failure_cost, float block_cost,
-                   std::string sqlite_fname,
-                   int min_size=4,
-                   int block_incr=2,
-                   float prior_a0 = 1.0,
-                   float prior_a1 = 1.0,
-                   float prior_b0 = 1.0,
-                   float prior_b1 = 1.0,
-                   std::string transition_dist="beta_binom",
-                   std::string test_statistic="wald",
-                   float act_l=0.2, float act_u=0.8, int act_n=7) {
+void trial_mdp(int n_patients,
+               float failure_cost, float block_cost,
+               std::string sqlite_fname,
+               int min_size=4,
+               int block_incr=2,
+               float prior_a0 = 1.0,
+               float prior_a1 = 1.0,
+               float prior_b0 = 1.0,
+               float prior_b1 = 1.0,
+               std::string transition_dist="beta_binom",
+               std::string test_statistic="scaled_cmh",
+               float act_l=0.2, float act_u=0.8, int act_n=7) {
 
 
-  BlockRAROpt solver = BlockRAROpt(n_patients,
-                                   failure_cost, block_cost,
-                                   min_size, block_incr,
-                                   prior_a0, prior_a1,
-                                   prior_b0, prior_b1,
-                                   transition_dist,
-                                   test_statistic,
-                                   act_l, act_u, act_n);
+  TrialMDP solver = TrialMDP(n_patients,
+                             failure_cost, block_cost,
+                             min_size, block_incr,
+                             prior_a0, prior_a1,
+                             prior_b0, prior_b1,
+                             transition_dist,
+                             test_statistic,
+                             act_l, act_u, act_n);
   
   std::cout << "Solver initialized." << std::endl;
   std::cout << "\tN patients: " << n_patients << std::endl; 

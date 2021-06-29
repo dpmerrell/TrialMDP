@@ -6,12 +6,12 @@
 #include "state_iterator.h"
 #include "contingency_iterator.h"
 #include "contingency_table.h"
-#include "block_rar_table.h"
+#include "trial_mdp_table.h"
 #include <vector>
 #include <iostream>
 
 
-StateIterator::StateIterator(BlockRARTable tab){
+StateIterator::StateIterator(TrialMDPTable tab){
     n_vec = tab.get_n_vec();
     cur_idx = n_vec.size()-1;
     cur_iter = new ContingencyIterator(n_vec[cur_idx]);

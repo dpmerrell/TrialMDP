@@ -116,61 +116,6 @@ class WaldFailureTerminalRule : public TerminalRule {
 };
 
 
-class FailureTerminalRule : public TerminalRule {
-
-    private:
-      float failure_cost;
-
-    public:
-
-      FailureTerminalRule(float f_c){ 
-        failure_cost = f_c;
-        return; 
-      }
-
-      StateResult operator()(ResultInterpreter interp, ContingencyTable ct){
-   
- 
-          // Some useful row sums:
-          float N_a = ct.a0 + ct.a1;
-          float N_b = ct.b0 + ct.b1;
-
-          float failures = std::numeric_limits<float>::infinity();
-          float rwd = -std::numeric_limits<float>::infinity();
-
-          if (N_a > 0.0 && N_b > 0.0){
-              
-              float p_a = float(ct.a1) / N_a;
-              float p_b = float(ct.b1) / N_b;
-              
-              if(p_a >= p_b){
-                  failures = (p_a - p_b)*N_b;
-              }else{
-                  failures = (p_b - p_a)*N_a;
-              }
-          
-              // Compute the linear combination of those
-              // factors
-              rwd = -failure_cost*failures; 
-
-          }
-
-          //float failures = ct.a0 + ct.b0;
-          //float rwd = -failure_cost*failures;
-          StateResult result = StateResult(interp.get_n_attr());
-          for(unsigned int i=0; i < interp.get_n_attr(); ++i){
-              result.values[i] = 0.0;
-          }
-          interp.set_attr(result, "Failure",  failures);
-          interp.set_attr(result, "TotalReward", rwd);
-
-          return result;
-      }
-
-};
-
-
-
 class RescaledFailureTerminalRule : public TerminalRule {
 
     private:

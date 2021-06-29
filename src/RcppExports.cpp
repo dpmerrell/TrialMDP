@@ -5,9 +5,9 @@
 
 using namespace Rcpp;
 
-// block_rar_opt
-void block_rar_opt(int n_patients, float failure_cost, float block_cost, std::string sqlite_fname, int min_size, int block_incr, float prior_a0, float prior_a1, float prior_b0, float prior_b1, std::string transition_dist, std::string test_statistic, float act_l, float act_u, int act_n);
-RcppExport SEXP _blockRARopt_block_rar_opt(SEXP n_patientsSEXP, SEXP failure_costSEXP, SEXP block_costSEXP, SEXP sqlite_fnameSEXP, SEXP min_sizeSEXP, SEXP block_incrSEXP, SEXP prior_a0SEXP, SEXP prior_a1SEXP, SEXP prior_b0SEXP, SEXP prior_b1SEXP, SEXP transition_distSEXP, SEXP test_statisticSEXP, SEXP act_lSEXP, SEXP act_uSEXP, SEXP act_nSEXP) {
+// trial_mdp
+void trial_mdp(int n_patients, float failure_cost, float block_cost, std::string sqlite_fname, int min_size, int block_incr, float prior_a0, float prior_a1, float prior_b0, float prior_b1, std::string transition_dist, std::string test_statistic, float act_l, float act_u, int act_n);
+RcppExport SEXP _TrialMDP_trial_mdp(SEXP n_patientsSEXP, SEXP failure_costSEXP, SEXP block_costSEXP, SEXP sqlite_fnameSEXP, SEXP min_sizeSEXP, SEXP block_incrSEXP, SEXP prior_a0SEXP, SEXP prior_a1SEXP, SEXP prior_b0SEXP, SEXP prior_b1SEXP, SEXP transition_distSEXP, SEXP test_statisticSEXP, SEXP act_lSEXP, SEXP act_uSEXP, SEXP act_nSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type n_patients(n_patientsSEXP);
@@ -25,17 +25,17 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< float >::type act_l(act_lSEXP);
     Rcpp::traits::input_parameter< float >::type act_u(act_uSEXP);
     Rcpp::traits::input_parameter< int >::type act_n(act_nSEXP);
-    block_rar_opt(n_patients, failure_cost, block_cost, sqlite_fname, min_size, block_incr, prior_a0, prior_a1, prior_b0, prior_b1, transition_dist, test_statistic, act_l, act_u, act_n);
+    trial_mdp(n_patients, failure_cost, block_cost, sqlite_fname, min_size, block_incr, prior_a0, prior_a1, prior_b0, prior_b1, transition_dist, test_statistic, act_l, act_u, act_n);
     return R_NilValue;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_blockRARopt_block_rar_opt", (DL_FUNC) &_blockRARopt_block_rar_opt, 15},
+    {"_TrialMDP_trial_mdp", (DL_FUNC) &_TrialMDP_trial_mdp, 15},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_blockRARopt(DllInfo *dll) {
+RcppExport void R_init_TrialMDP(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }

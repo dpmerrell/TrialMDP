@@ -13,7 +13,7 @@
 #include <vector>
 #include "contingency_iterator.h"
 #include "contingency_table.h"
-#include "block_rar_table.h"
+#include "trial_mdp_table.h"
 
 class StateIterator{
 
@@ -25,7 +25,7 @@ class StateIterator{
 
     public:
 	// constructors 
-	StateIterator(BlockRARTable tab);
+	StateIterator(TrialMDPTable tab);
 	StateIterator();
 	StateIterator(const StateIterator& si2);
 

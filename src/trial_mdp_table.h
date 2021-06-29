@@ -1,16 +1,16 @@
-// block_rar_table.h
+// trial_mdp_table.h
 // (c) David Merrell 2020-08
 //
 // A class that stores all of the results
-// for a block RAR RCT design problem. 
+// for an adaptive multistage trial design problem. 
 // I.e., for every possible state it stores
 // the best action and the expected reward.
 // 
 // It's essentially a vector of hash maps;
 // one map for every possible size of contingency table. 
 
-#ifndef _BLOCK_RAR_TABLE_H
-#define _BLOCK_RAR_TABLE_H
+#ifndef _TRIAL_MDP_TABLE_H
+#define _TRIAL_MDP_TABLE_H
 
 #include <unordered_map>
 #include <vector>
@@ -18,21 +18,21 @@
 #include "state_result.h"
 #include <iostream>
 
-class BlockRARTable{
+class TrialMDPTable{
 
     private:
         std::vector< std::unordered_map<ContingencyTable, StateResult, CTHash>* > results;
 	std::vector<int> n_vec;
 
     public:
-        BlockRARTable(int n_max, int min_size, int n_incr);
+        TrialMDPTable(int n_max, int min_size, int n_incr);
 
-	BlockRARTable(){
+	TrialMDPTable(){
             results = std::vector< std::unordered_map<ContingencyTable, StateResult, CTHash>* >();
 	    n_vec = std::vector<int>();
 	}
 
-	BlockRARTable(const BlockRARTable& other){
+	TrialMDPTable(const TrialMDPTable& other){
             results = other.results;
 	    n_vec = other.n_vec;
 	}

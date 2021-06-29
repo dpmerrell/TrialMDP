@@ -1,7 +1,7 @@
-// block_rar_opt.h
+// trial_mdp.h
 // (c) David Merrell 2020-08
 //
-// Class that represents a block RAR RCT design
+// Class that represents a multistage adaptive trial design
 // problem instance.
 // 
 // Important attributes:
@@ -16,20 +16,20 @@
 //                   obtaining an optimal policy governing the RCT.
 //   * to_sqlite():  save the optimal policy to a SQLite database.
 
-#ifndef _BLOCK_RAR_OPT_H
-#define _BLOCK_RAR_OPT_H
+#ifndef _TRIAL_MDP_H
+#define _TRIAL_MDP_H
 
 #include "result_interpreter.h"
 #include "contingency_table.h"
 #include "state_result.h"
-#include "block_rar_table.h"
+#include "trial_mdp_table.h"
 #include "state_iterator.h"
 #include "action_iterator.h"
 #include "transition_dist.h"
 #include "terminal_rule.h"
 #include <string>
 
-class BlockRAROpt{
+class TrialMDP{
 
     private:
 	// Data
@@ -40,7 +40,7 @@ class BlockRAROpt{
 
         int n_attr;
 	
-        BlockRARTable* results_table;
+        TrialMDPTable* results_table;
         StateIterator* state_iterator;
 	ActionIterator* action_iterator;
         TransitionDist* transition_dist;
@@ -54,7 +54,7 @@ class BlockRAROpt{
     public:
 
         // Constructor
-	BlockRAROpt(int n_patients, float failure_cost, float block_cost,
+	TrialMDP(int n_patients, float failure_cost, float block_cost,
                     int min_size, int block_incr, 
                     float prior_a0, float prior_a1,
                     float prior_b0, float prior_b1, 
@@ -67,7 +67,7 @@ class BlockRAROpt{
 	void to_sqlite(char* db_fname, int chunk_size);
 
 	// Destructor
-	~BlockRAROpt();
+	~TrialMDP();
 };
 
 #endif

@@ -1,10 +1,10 @@
-// block_rar_opt.cpp
+// trial_mdp.cpp
 // (c) 2020 David Merrell
 //
-// Implementation of BlockRAROpt class
+// Implementation of TrialMDP class
 
-#include "block_rar_opt.h"
-#include "block_rar_table.h"
+#include "trial_mdp.h"
+#include "trial_mdp_table.h"
 #include "state_result.h"
 #include "transition_iterator.h"
 #include "transition_dist.h"
@@ -25,7 +25,7 @@
  * value of the maximized reward, and the terms of the
  * objective function)
  */
-StateResult BlockRAROpt::max_expected_reward(int cur_idx, ContingencyTable ct){
+StateResult TrialMDP::max_expected_reward(int cur_idx, ContingencyTable ct){
 
     float FLOAT_NEG_INF = -std::numeric_limits<float>::infinity();
     int rwd_idx = n_attr - 1;
@@ -99,7 +99,7 @@ StateResult BlockRAROpt::max_expected_reward(int cur_idx, ContingencyTable ct){
 
 
 // Constructor
-BlockRAROpt::BlockRAROpt(int n_patients, float failure_cost, float block_cost,
+TrialMDP::TrialMDP(int n_patients, float failure_cost, float block_cost,
                          int min_size, int block_incr, 
                          float prior_a0, float prior_a1,
                          float prior_b0, float prior_b1,
@@ -111,7 +111,7 @@ BlockRAROpt::BlockRAROpt(int n_patients, float failure_cost, float block_cost,
 
     n_attr = result_interpreter.get_n_attr();
 
-    results_table = new BlockRARTable(n_patients, min_size, block_incr); 
+    results_table = new TrialMDPTable(n_patients, min_size, block_incr); 
     state_iterator = new StateIterator(*(results_table)); 
     action_iterator = new ActionIterator(act_l, act_u, act_n, 
 		                         results_table->get_n_vec(),
@@ -128,7 +128,7 @@ BlockRAROpt::BlockRAROpt(int n_patients, float failure_cost, float block_cost,
 }
 
 
-void BlockRAROpt::solve(){
+void TrialMDP::solve(){
 
     // Iterate through the terminal states;
     // set the terminal rewards
@@ -167,7 +167,7 @@ void BlockRAROpt::solve(){
 
 
 
-void BlockRAROpt::to_sqlite(char* db_fname, int chunk_size=10000){
+void TrialMDP::to_sqlite(char* db_fname, int chunk_size=10000){
 
     // Make database connection pointer
     sqlite3* db;
@@ -247,7 +247,7 @@ void BlockRAROpt::to_sqlite(char* db_fname, int chunk_size=10000){
 }
     
 
-BlockRAROpt::~BlockRAROpt(){
+TrialMDP::~TrialMDP(){
     delete state_iterator;
     delete action_iterator;
     delete results_table;

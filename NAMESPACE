@@ -1,4 +1,4 @@
-useDynLib(blockRARopt, .registration=TRUE)
+useDynLib(TrialMDP, .registration=TRUE)
 exportPattern("^[[:alpha:]]+")
 importFrom(Rcpp, evalCpp)
 import(RSQLite)

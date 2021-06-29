@@ -3,9 +3,9 @@
 ![build and test](https://github.com/dpmerrell/blockRARopt/workflows/build_and_test/badge.svg)
 
 
-# blockRARopt
+# Trial MDP 
 
-An optimization solver for block RAR RCT design -- all wrapped up in an R package.
+An optimization solver for adaptive multistage trial design, implemented in C++ and wrapped in an R package.
 
 [See these Google slides for more information.](https://docs.google.com/presentation/d/15oAJu6PEweWosXLDnaXX5xcuBJHCEPyHMZB1zDjJXd0/edit?usp=sharing)
 
@@ -18,19 +18,19 @@ Follow these steps:
 ```
 $ sudo apt install sqlite3-dev
 ```
-The `blockRARopt` package uses SQLite to write its output to a database.
+The `TrialMDP` package uses SQLite to write its output to a database.
 
-* Install the `blockRARopt` package. We aren't on CRAN yet -- for now we recommend using `devtools`:
+* Install the `TrialMDP` package. We aren't on CRAN yet -- for now we recommend using `devtools`:
 ```R
 > library("devtools")
 Loading required package: usethis
-> devtools::install_github("https://github.com/dpmerrell/blockRARopt")
+> devtools::install_github("https://github.com/dpmerrell/TrialMDP")
 ```
 
 ## Basic usage
 ```R
-> library("blockRARopt")
-> blockRARopt::block_rar_opt(10, 1, 0.0, 100.0, "results.sqlite")
+> library("TrialMDP")
+> TrialMDP::trial_mdp(10, 1, 0.0, 100.0, "results.sqlite")
 about to initialize solver
 Initialized solver; about to solve
 FIRST MOVE:

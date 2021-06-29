@@ -1,8 +1,8 @@
-// block_rar_table.cpp
+// trial_mdp_table.cpp
 // (c) 2020 David Merrell
 //
 
-#include "block_rar_table.h"
+#include "trial_mdp_table.h"
 #include "contingency_table.h"
 #include "state_result.h"
 #include <iostream>
@@ -24,7 +24,7 @@ std::vector<int> build_n_vec(unsigned int n_max, unsigned int min_size, unsigned
 }
 
 
-BlockRARTable::BlockRARTable(int n_max, int min_size, int n_incr){
+TrialMDPTable::TrialMDPTable(int n_max, int min_size, int n_incr){
     n_vec = build_n_vec(n_max, min_size, n_incr);
     results = std::vector< std::unordered_map<ContingencyTable, StateResult, CTHash>* >();
     

@@ -6,7 +6,7 @@
 // This allows a StateResult to be, essentially, 
 // a static array of unlabeled floating point numbers.
 // This keeps StateResult as lightweight as
-// possible, so the BlockRAROpt instance can store
+// possible, so the TrialMDP instance can store
 // an enormous table of them. 
 // 
 

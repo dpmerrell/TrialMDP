@@ -37,91 +37,17 @@ ResultInterpreter::ResultInterpreter(std::string test_statistic,
         lookahead_rules.push_back(waldstat_lr);
         stat_idx = idx; 
         idx++;
-    }else if(test_statistic == "harmonic_mean"){
-        attr_names.push_back("HarmonicMean");
-        BlockHarmonicMeanLR* bharmonic_lr = new BlockHarmonicMeanLR();
-        lookahead_rules.push_back(bharmonic_lr);
-        stat_idx = idx;
-        idx++; 
-    }else if(test_statistic == "cmh"){
-
-        attr_names.push_back("CMHStatistic");
-        CMHStatisticLR* cmhstat_lr = new CMHStatisticLR(idx, idx+1, idx+2);
-        lookahead_rules.push_back(cmhstat_lr);
-        stat_idx = idx; 
-        idx++;
-
-        attr_names.push_back("CMH_numerator_sqrt");
-        lookahead_rules.push_back(cmhstat_lr);
-        idx++;
-        
-        attr_names.push_back("CMH_denominator");
-        lookahead_rules.push_back(cmhstat_lr);
-        idx++;
     }else if(test_statistic == "scaled_cmh"){
-
-        attr_names.push_back("ScaledCMHStatistic");
-        ScaledCMHStatisticLR* cmhstat_lr = new ScaledCMHStatisticLR(idx, idx+1, idx+2, n_pat);
-        lookahead_rules.push_back(cmhstat_lr);
+        attr_names.push_back("ScaledCMH");
+        //ScaledCMH* scaled_cmh_lr = new ScaledCMH(idx, idx+1, n_pat);
+        ScaledCMH* scaled_cmh_lr = new ScaledCMH(idx, n_pat);
+        lookahead_rules.push_back(scaled_cmh_lr);
         stat_idx = idx; 
         idx++;
 
-        attr_names.push_back("CMH_numerator_sqrt");
-        lookahead_rules.push_back(cmhstat_lr);
-        idx++;
-        
-        attr_names.push_back("CMH_denominator");
-        lookahead_rules.push_back(cmhstat_lr);
-        idx++;
-    }else if(test_statistic == "scaled_cmh_2o"){
-
-        attr_names.push_back("ScaledCMHStatistic");
-        ScaledCMH2ndOrderLR* cmhstat_lr = new ScaledCMH2ndOrderLR(idx, idx+1, idx+2, idx+3, n_pat);
-        lookahead_rules.push_back(cmhstat_lr);
-        stat_idx = idx; 
-        idx++;
-
-        attr_names.push_back("CMH_numerator_sqrt");
-        lookahead_rules.push_back(cmhstat_lr);
-        idx++;
-        
-        attr_names.push_back("CMH_numerator");
-        lookahead_rules.push_back(cmhstat_lr);
-        idx++;
-        
-        attr_names.push_back("CMH_denominator");
-        lookahead_rules.push_back(cmhstat_lr);
-        idx++;
-        
-    }else if(test_statistic == "harmonic_mean_2"){
-
-        attr_names.push_back("HarmonicMean");
-        HarmonicMeanLR* hm_lr = new HarmonicMeanLR(idx, idx+1);
-        lookahead_rules.push_back(hm_lr);
-        stat_idx = idx; 
-        idx++;
-
-        attr_names.push_back("HarmonicMean_inv");
-        lookahead_rules.push_back(hm_lr);
-        idx++;
-    }else if(test_statistic == "hm_dsq"){
-        attr_names.push_back("HarmonicMeanDSQ");
-        HarmonicMeanDSQ* hmdsq_lr = new HarmonicMeanDSQ(idx, idx+1, idx+2, idx+3, n_pat);
-        lookahead_rules.push_back(hmdsq_lr);
-        stat_idx = idx; 
-        idx++;
-
-        attr_names.push_back("DSQ_numerator_sqrt");
-        lookahead_rules.push_back(hmdsq_lr);
-        idx++;
-        
-        attr_names.push_back("DSQ_numerator");
-        lookahead_rules.push_back(hmdsq_lr);
-        idx++;
-        
-        attr_names.push_back("DSQ_denominator");
-        lookahead_rules.push_back(hmdsq_lr);
-        idx++;
+        //attr_names.push_back("HarmonicMeans");
+        //lookahead_rules.push_back(scaled_cmh_lr);
+        //idx++;
     }   
 
     attr_names.push_back("TotalReward");
