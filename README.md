@@ -50,3 +50,7 @@ EXPECTED REWARD:
 solver completed
 Saved to file: results.sqlite
 ```
+
+## Licensing
+
+We distribute TrialMDP under an MIT license. See LICENSE.txt for details.
