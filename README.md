@@ -15,7 +15,7 @@ TODO add manuscript link
 See the [TrialMDP-analyses repository](https://github.com/dpmerrell/TrialMDP-analyses) for code that reproduces all of our performance evaluations.
 
 ## Installation
-_Note: We only support Linux and Mac currently._
+_Note: We only support Mac and Linux currently._
 
 Follow these steps:
 
@@ -33,29 +33,49 @@ Loading required package: usethis
 ```
 
 ## Basic usage
+
+### Generate an optimal trial design and save to a SQLite database
 ```R
 > # Load the library
 > library("TrialMDP")
 > # Design a trial for 44 patients; failure cost=4, stage cost=0.025.
-> # Save to a sqlite file.
 > TrialMDP::trial_mdp(44, 4.0, 0.025, "results.sqlite", min_size=8, block_incr=2)
-about to initialize solver
-Initialized solver; about to solve
-FIRST MOVE:
-	block size: 10
-		N_A: 5
-		N_B: 5
-
-EXPECTED REWARD:
-	Wald statistic: 0.533882
-	Failures: 0.878906
-	Number of blocks: 1
-
-	Total: -99.4661
-solver completed
+Solver initialized.
+	N patients: 44
+	Min block size: 8
+	Block increment: 2
+	Allocations: {0.2, ..., 0.8} (7)
+	Failure cost: 4
+	Block cost: 0.025
+	Test statistic: scaled_cmh
+Solving.
+Action:
+	Block size: 8
+	N_A: 4
+	N_B: 4
+Expected values:
+	Failure: -0.151702
+	RemainingBlocks: 3.072850
+	ScaledCMH: 1.039444
+	TotalReward: 1.569432
+Solver completed.
 Saved to file: results.sqlite
 ```
 
+### Use the saved trial design
+```R
+> # Connect to the trial design SQLite database
+> conn = TrialMDP::connect_to_results("results.sqlite")
+> # Get the action for the *empty* contingency table, i.e., (0,0,0,0)
+> res = TrialMDP::fetch_result(conn, 0,0,0,0)
+> print(res)
+  A0 A1 B0 B1 BlockSize AAllocation   Failure RemainingBlocks ScaledCMH
+1  0  0  0  0         8           4 -0.151702         3.07285  1.039444
+  TotalReward
+1    1.569432
+```
+
+
 ## Licensing
 
-We distribute TrialMDP under an MIT license. See LICENSE.txt for details.
+We distribute the contents of this repository under an MIT license. See LICENSE.txt for details.
