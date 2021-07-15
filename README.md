@@ -12,6 +12,8 @@ An R package, implemented in C++.
 [See the TrialMDP manuscript for more information.](https://docs.google.com/presentation/d/15oAJu6PEweWosXLDnaXX5xcuBJHCEPyHMZB1zDjJXd0/edit?usp=sharing)
 TODO add manuscript link
 
+See the [TrialMDP-analyses repository](https://github.com/dpmerrell/TrialMDP-analyses) for code that reproduces all of our performance evaluations.
+
 ## Installation
 _Note: We only support Linux and Mac currently._
 
@@ -23,7 +25,7 @@ $ sudo apt install sqlite3-dev
 ```
 The `TrialMDP` package uses SQLite to write its output to a database.
 
-* Install the `TrialMDP` package. We aren't on CRAN yet -- for now we recommend using `devtools`:
+* Install the `TrialMDP` package. We aren't on CRAN yet&mdash;for now we recommend using `devtools`:
 ```R
 > library("devtools")
 Loading required package: usethis
@@ -32,8 +34,11 @@ Loading required package: usethis
 
 ## Basic usage
 ```R
+> # Load the library
 > library("TrialMDP")
-> TrialMDP::trial_mdp(10, 1, 0.0, 100.0, "results.sqlite")
+> # Design a trial for 44 patients; failure cost=4, stage cost=0.025.
+> # Save to a sqlite file.
+> TrialMDP::trial_mdp(44, 4.0, 0.025, "results.sqlite", min_size=8, block_incr=2)
 about to initialize solver
 Initialized solver; about to solve
 FIRST MOVE:
