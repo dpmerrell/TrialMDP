@@ -12,7 +12,7 @@ An R package, implemented in C++.
 [See the TrialMDP manuscript for more information.](https://docs.google.com/presentation/d/15oAJu6PEweWosXLDnaXX5xcuBJHCEPyHMZB1zDjJXd0/edit?usp=sharing)
 TODO add manuscript link
 
-See the [TrialMDP-analyses repository](https://github.com/dpmerrell/TrialMDP-analyses) for code that reproduces all of our performance evaluations.
+See the [TrialMDP-analyses repository](https://github.com/dpmerrell/TrialMDP-analyses) for code that reproduces all of the results in the manuscript.
 
 ## Installation
 _Note: We only support Mac and Linux currently._
