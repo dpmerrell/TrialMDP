@@ -3,14 +3,17 @@
 ![build and test](https://github.com/dpmerrell/blockRARopt/workflows/build_and_test/badge.svg)
 
 
-# Trial MDP 
+# TrialMDP 
 
-An optimization solver for adaptive multistage trial design, implemented in C++ and wrapped in an R package.
+An optimization solver that designs adaptive multistage clinical trials.
 
-[See these Google slides for more information.](https://docs.google.com/presentation/d/15oAJu6PEweWosXLDnaXX5xcuBJHCEPyHMZB1zDjJXd0/edit?usp=sharing)
+An R package, implemented in C++.
+
+[See the TrialMDP manuscript for more information.](https://docs.google.com/presentation/d/15oAJu6PEweWosXLDnaXX5xcuBJHCEPyHMZB1zDjJXd0/edit?usp=sharing)
+TODO add manuscript link
 
 ## Installation
-_Note: So far I've only tested this on Ubuntu. We hope to support Mac and Windows in the future._
+_Note: We only support Linux and Mac currently._
 
 Follow these steps:
 
