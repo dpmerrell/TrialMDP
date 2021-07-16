@@ -5,6 +5,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // trial_mdp
 void trial_mdp(int n_patients, float failure_cost, float block_cost, std::string sqlite_fname, int min_size, int block_incr, float prior_a0, float prior_a1, float prior_b0, float prior_b1, std::string transition_dist, std::string test_statistic, float act_l, float act_u, int act_n);
 RcppExport SEXP _TrialMDP_trial_mdp(SEXP n_patientsSEXP, SEXP failure_costSEXP, SEXP block_costSEXP, SEXP sqlite_fnameSEXP, SEXP min_sizeSEXP, SEXP block_incrSEXP, SEXP prior_a0SEXP, SEXP prior_a1SEXP, SEXP prior_b0SEXP, SEXP prior_b1SEXP, SEXP transition_distSEXP, SEXP test_statisticSEXP, SEXP act_lSEXP, SEXP act_uSEXP, SEXP act_nSEXP) {

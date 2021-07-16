@@ -1,11 +1,13 @@
-Package: TrialMDP 
+Package: TrialMDP
 Type: Package
-Title: What the Package Does in One 'Title Case' Line
+Title: An Algorithm for Designing Adaptive Multistage Clinical Trials
 Version: 1.0
 Date: 2020-10-08
 Author: David Merrell
 Maintainer: David Merrell <dmerrell@cs.wisc.edu>
-Description: One paragraph description of what the package does as one or more full sentences.
+Description: TrialMDP models an adaptive multistage trial as a Markov Decision Process, and solves it via dynamic programming.
+             It saves the trial design (i.e., optimal policy) as a SQLite database.
+             TrialMDP allows the user to specify a balance between (i) statistical power and (ii) patient outcomes.
 License: GPL (>= 2)
 Imports: 
     Rcpp (>= 1.0.5),
@@ -15,3 +17,4 @@ LinkingTo:
     Rcpp, 
     BH
 SystemRequirements: C++11
+RoxygenNote: 7.1.1
