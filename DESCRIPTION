@@ -9,7 +9,7 @@ Description: TrialMDP models an adaptive multistage trial as a Markov Decision P
              It saves the trial design (i.e., optimal policy) as a SQLite database.
              TrialMDP allows the user to specify a balance between (i) statistical power and (ii) patient outcomes.
              It is best suited for small trials where patient failures have high cost.
-License: MIT
+License: MIT + file LICENSE
 Imports: 
     Rcpp (>= 1.0.5),
     BH,
