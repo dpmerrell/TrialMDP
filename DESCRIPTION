@@ -1,12 +1,12 @@
 Package: TrialMDP 
 Type: Package
-Title: What the Package Does in One 'Title Case' Line
+Title: An Algorithm for Designing Adaptive Multistage Clinical Trials
 Version: 1.0
-Date: 2020-10-08
+Date: 2021-07-16
 Author: David Merrell
 Maintainer: David Merrell <dmerrell@cs.wisc.edu>
-Description: One paragraph description of what the package does as one or more full sentences.
-License: GPL (>= 2)
+Description: TrialMDP designs adaptive multistage clinical trials that balance (i) statistical power and (ii) patient outcomes. It is best suited for small trials where patient failures have high cost.
+License: MIT
 Imports: 
     Rcpp (>= 1.0.5),
     BH,
