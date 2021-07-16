@@ -14,6 +14,14 @@ TODO add manuscript link
 
 See the [TrialMDP-analyses repository](https://github.com/dpmerrell/TrialMDP-analyses) for code that reproduces all of the results in the manuscript.
 
+## R package dependencies
+
+* Rcpp (>= 1.0.5)
+* RSQLite
+* BH
+
+See the `DESCRIPTION` file for other details. 
+
 ## Installation
 _Note: We only support Mac and Linux currently._
 
@@ -21,9 +29,9 @@ Follow these steps:
 
 * Install the SQLite3 dev libraries. E.g., for Ubuntu:
 ```
-$ sudo apt install sqlite3-dev
+$ sudo apt install libsqlite3-dev
 ```
-The `TrialMDP` package uses SQLite to write its output to a database.
+The `TrialMDP` package writes its output to a SQLite database.
 
 * Install the `TrialMDP` package. We aren't on CRAN yet&mdash;for now we recommend using `devtools`:
 ```R
