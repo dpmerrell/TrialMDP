@@ -5,7 +5,7 @@
 
 # TrialMDP 
 
-An optimization solver that designs adaptive multistage clinical trials.
+An optimization solver that designs blocked Response-Adaptive Randomized (RAR) trials.
 
 An R package, implemented in C++.
 
