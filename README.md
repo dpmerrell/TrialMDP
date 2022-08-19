@@ -9,7 +9,9 @@ An optimization solver that designs blocked Response-Adaptive Randomized (RAR) t
 
 An R package, implemented in C++.
 
-[See the TrialMDP manuscript for more information.](https://arxiv.org/abs/2109.14642)
+See the TrialMDP manuscript for more information:
+
+> [*A Markdov Decision Process for Response-Adaptive Randomization in Clinical Trials*. David Merrell, Thevaa Chandereng, and Yeonhee Park. Computational Statistics and Data Analysis. 2023 (to appear)](https://arxiv.org/abs/2109.14642)
 
 See the [TrialMDP-analyses repository](https://github.com/dpmerrell/TrialMDP-analyses) for code that reproduces all of the results in the manuscript.
 
