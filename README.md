@@ -11,9 +11,9 @@ An R package, implemented in C++.
 
 See the TrialMDP manuscript for more information:
 
-> [*A Markdov Decision Process for Response-Adaptive Randomization in Clinical Trials*. David Merrell, Thevaa Chandereng, and Yeonhee Park. Computational Statistics and Data Analysis. 2023 (to appear)](https://arxiv.org/abs/2109.14642)
+> [*A Markov Decision Process for Response-Adaptive Randomization in Clinical Trials*. David Merrell, Thevaa Chandereng, and Yeonhee Park. Computational Statistics and Data Analysis. 2023 (to appear)](https://arxiv.org/abs/2109.14642)
 
-See the [TrialMDP-analyses repository](https://github.com/dpmerrell/TrialMDP-analyses) for code that reproduces all of the results in the manuscript.
+See also the [TrialMDP-analyses repository](https://github.com/dpmerrell/TrialMDP-analyses) for our analysis code. It contains a Snakemake workflow that reproduces all of the results in the manuscript.
 
 ## R package dependencies
 
@@ -21,10 +21,9 @@ See the [TrialMDP-analyses repository](https://github.com/dpmerrell/TrialMDP-ana
 * RSQLite
 * BH
 
-See the `DESCRIPTION` file for other details. 
 
 ## Installation
-_Note: We only support Mac and Linux currently._
+_Important: We only support Mac and Linux currently._
 
 Follow these steps:
 
