@@ -11,7 +11,7 @@ An R package, implemented in C++.
 
 See the TrialMDP manuscript for more information:
 
-> [*A Markov Decision Process for Response-Adaptive Randomization in Clinical Trials*. David Merrell, Thevaa Chandereng, and Yeonhee Park. Computational Statistics and Data Analysis. 2023 (to appear)](https://arxiv.org/abs/2109.14642)
+> [*A Markov Decision Process for Response-Adaptive Randomization in Clinical Trials*. David Merrell, Thevaa Chandereng, and Yeonhee Park. Computational Statistics and Data Analysis. Feb 2023 (to appear)](https://doi.org/10.1016/j.csda.2022.107599)
 
 See also the [TrialMDP-analyses repository](https://github.com/dpmerrell/TrialMDP-analyses) for our analysis code. It contains a Snakemake workflow that reproduces all of the results in the manuscript.
 
@@ -82,7 +82,6 @@ Saved to file: results.sqlite
   TotalReward
 1    1.569432
 ```
-
 
 ## Licensing
 
